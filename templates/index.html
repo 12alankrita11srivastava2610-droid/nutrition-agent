@@ -3,222 +3,257 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NutriAI – AI Nutrition Assistant | IBM Granite</title>
+  <title>NutriAI – AI Nutrition Assistant</title>
   <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>" />
 </head>
 <body>
 
-<!-- ═══════════════════════════  SIDEBAR  ════════════════════════════════ -->
+<!-- ══════════════════ SIDEBAR ══════════════════ -->
 <aside class="sidebar" id="sidebar">
-  <div class="sidebar-header">
-    <div class="logo">
-      <span class="logo-icon">🥗</span>
-      <div>
-        <div class="logo-title">NutriAI</div>
-        <div class="logo-sub">Powered by IBM Granite</div>
-      </div>
+  <div class="sidebar-brand">
+    <div class="brand-icon">🥗</div>
+    <div class="brand-text">
+      <span class="brand-name">NutriAI</span>
+      <span class="brand-sub">IBM Granite</span>
     </div>
-    <button class="sidebar-toggle" id="sidebarClose" aria-label="Close sidebar">✕</button>
+    <button class="sidebar-close" id="sidebarClose" aria-label="Close">✕</button>
+  </div>
+
+  <div class="sidebar-status">
+    <div class="status-pill" id="statusPill">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Connecting…</span>
+    </div>
   </div>
 
   <nav class="sidebar-nav">
-    <button class="nav-btn active" data-panel="chat"        onclick="showPanel('chat')">💬 Chat Assistant</button>
-    <button class="nav-btn"        data-panel="profile"     onclick="showPanel('profile')">👤 My Profile</button>
-    <button class="nav-btn"        data-panel="mealplan"    onclick="showPanel('mealplan')">📅 Meal Planner</button>
-    <button class="nav-btn"        data-panel="foodswap"    onclick="showPanel('foodswap')">🔄 Food Swaps</button>
-    <button class="nav-btn"        data-panel="explain"     onclick="showPanel('explain')">🔬 Explain Food</button>
-    <button class="nav-btn"        data-panel="image"       onclick="showPanel('image')">📷 Image Analysis</button>
-    <button class="nav-btn"        data-panel="lookup"      onclick="showPanel('lookup')">🔍 Food Lookup</button>
-    <button class="nav-btn"        data-panel="suggestions" onclick="showPanel('suggestions')">✨ Suggestions</button>
+    <div class="nav-section-label">Main</div>
+    <button class="nav-item active" data-panel="chat"        onclick="showPanel('chat')">
+      <span class="nav-icon">💬</span><span class="nav-label">Chat Assistant</span>
+    </button>
+    <button class="nav-item" data-panel="profile"     onclick="showPanel('profile')">
+      <span class="nav-icon">👤</span><span class="nav-label">My Profile</span>
+    </button>
+
+    <div class="nav-section-label">Features</div>
+    <button class="nav-item" data-panel="mealplan"    onclick="showPanel('mealplan')">
+      <span class="nav-icon">📅</span><span class="nav-label">Meal Planner</span>
+    </button>
+    <button class="nav-item" data-panel="foodswap"    onclick="showPanel('foodswap')">
+      <span class="nav-icon">🔄</span><span class="nav-label">Food Swaps</span>
+    </button>
+    <button class="nav-item" data-panel="explain"     onclick="showPanel('explain')">
+      <span class="nav-icon">🔬</span><span class="nav-label">Explain Food</span>
+    </button>
+    <button class="nav-item" data-panel="image"       onclick="showPanel('image')">
+      <span class="nav-icon">📷</span><span class="nav-label">Image Analysis</span>
+    </button>
+
+    <div class="nav-section-label">Tools</div>
+    <button class="nav-item" data-panel="lookup"      onclick="showPanel('lookup')">
+      <span class="nav-icon">🔍</span><span class="nav-label">Food Lookup</span>
+    </button>
+    <button class="nav-item" data-panel="suggestions" onclick="showPanel('suggestions')">
+      <span class="nav-icon">✨</span><span class="nav-label">AI Suggestions</span>
+    </button>
   </nav>
 
   <div class="sidebar-footer">
-    <div class="status-badge" id="statusBadge">
-      <span class="status-dot" id="statusDot"></span>
-      <span id="statusText">Checking…</span>
-    </div>
+    <span class="footer-tag">Powered by IBM Granite</span>
   </div>
 </aside>
 
-<!-- ════════════════════════════  MAIN  ══════════════════════════════════ -->
-<div class="main-wrapper">
+<!-- Sidebar overlay (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
-  <!-- Top bar -->
+<!-- ══════════════════ MAIN ══════════════════ -->
+<div class="main-wrapper" id="mainWrapper">
+
+  <!-- Topbar -->
   <header class="topbar">
-    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
-    <h1 class="topbar-title" id="panelTitle">💬 Chat Assistant</h1>
-    <div class="topbar-actions">
-      <span class="ibm-badge">IBM Granite</span>
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="topbar-center">
+      <h1 class="topbar-title" id="panelTitle">💬 Chat Assistant</h1>
+    </div>
+    <div class="topbar-right">
+      <span class="ibm-pill">IBM Granite</span>
     </div>
   </header>
 
-  <!-- ────────────────  CHAT PANEL  ──────────────── -->
+  <!-- ─────────────── CHAT ─────────────── -->
   <section class="panel active" id="panel-chat">
-    <div class="chat-container">
+    <div class="chat-wrap">
       <div class="chat-messages" id="chatMessages">
-        <div class="chat-message assistant">
-          <div class="avatar">🤖</div>
-          <div class="bubble">
-            <p>👋 Hello! I'm <strong>NutriAI</strong>, your AI-powered nutrition assistant built on IBM Granite.</p>
-            <p>I can help you with personalised meal plans, food swaps, nutritional breakdowns, and much more.</p>
-            <p><em>Complete your <strong>profile</strong> first for the most personalised advice!</em></p>
+        <div class="chat-msg assistant">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-content">
+            <div class="msg-bubble">
+              <p>👋 Hello! I'm <strong>NutriAI</strong>, your personal AI nutrition assistant powered by <strong>IBM Granite</strong>.</p>
+              <p>Ask me anything about food, diets, meal plans, or nutrition science. For best results, complete your <strong>👤 Profile</strong> first!</p>
+            </div>
+            <div class="msg-time">Just now</div>
           </div>
         </div>
       </div>
-      <div class="chat-input-row">
-        <textarea id="chatInput" class="chat-textarea" rows="2"
-          placeholder="Ask me anything about nutrition, meals, diets…" 
-          onkeydown="chatKeydown(event)"></textarea>
-        <button class="btn-send" onclick="sendChat()" aria-label="Send">➤</button>
+
+      <div class="chat-suggestions" id="chatSuggestions">
+        <button class="chat-pill" onclick="fillChat('What should I eat before a morning workout?')">🏋️ Pre-workout meal?</button>
+        <button class="chat-pill" onclick="fillChat('Give me a high protein breakfast idea')">🥚 High protein breakfast</button>
+        <button class="chat-pill" onclick="fillChat('What foods help reduce inflammation?')">🌿 Anti-inflammatory foods</button>
+        <button class="chat-pill" onclick="fillChat('How many calories should I eat to lose weight?')">⚖️ Calorie target?</button>
       </div>
-      <div class="chat-actions">
-        <button class="btn-ghost btn-sm" onclick="clearChat()">🗑 Clear Chat</button>
+
+      <div class="chat-input-bar">
+        <textarea id="chatInput" class="chat-input" rows="1"
+          placeholder="Ask about nutrition, meals, diets…"
+          onkeydown="chatKeydown(event)"
+          oninput="autoResize(this)"></textarea>
+        <button class="chat-send" id="chatSendBtn" onclick="sendChat()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="chat-footer-row">
+        <button class="link-btn" onclick="clearChat()">🗑 Clear chat</button>
+        <span class="chat-hint">Shift+Enter for new line · Enter to send</span>
       </div>
     </div>
   </section>
 
-  <!-- ────────────────  PROFILE PANEL  ──────────────── -->
+  <!-- ─────────────── PROFILE ─────────────── -->
   <section class="panel" id="panel-profile">
-    <div class="panel-inner">
-      <div class="panel-hero">
+    <div class="panel-page">
+      <div class="page-hero">
         <h2>👤 My Health Profile</h2>
-        <p>Fill in your details for a fully personalised AI nutrition experience.</p>
+        <p>Fill in your details to get fully personalised AI nutrition guidance.</p>
       </div>
 
-      <form id="profileForm" class="card-form" onsubmit="saveProfile(event)">
-        <div class="form-grid">
+      <div id="profileStats" class="stat-grid hidden"></div>
 
-          <div class="form-group">
-            <label>Name</label>
-            <input type="text" id="pName" placeholder="Your name" />
+      <form id="profileForm" onsubmit="saveProfile(event)">
+        <div class="form-card">
+          <div class="form-card-title">🧍 Personal Details</div>
+          <div class="form-grid">
+            <div class="field"><label>Name</label><input type="text" id="pName" placeholder="Your name" /></div>
+            <div class="field"><label>Age</label><input type="number" id="pAge" placeholder="Years" min="10" max="120" /></div>
+            <div class="field"><label>Gender</label>
+              <select id="pGender">
+                <option value="">Select…</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="field"><label>Height (cm)</label><input type="number" id="pHeight" placeholder="e.g. 165" min="50" max="250" /></div>
+            <div class="field"><label>Weight (kg)</label><input type="number" id="pWeight" placeholder="e.g. 65" min="20" max="500" step="0.1" /></div>
+            <div class="field"><label>Target Weight (kg)</label><input type="number" id="pTargetWeight" placeholder="e.g. 60" min="20" max="500" step="0.1" /></div>
           </div>
-          <div class="form-group">
-            <label>Age</label>
-            <input type="number" id="pAge" placeholder="Years" min="10" max="120" />
-          </div>
-          <div class="form-group">
-            <label>Gender</label>
-            <select id="pGender">
-              <option value="">Select…</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Height (cm)</label>
-            <input type="number" id="pHeight" placeholder="cm" min="50" max="250" />
-          </div>
-          <div class="form-group">
-            <label>Current Weight (kg)</label>
-            <input type="number" id="pWeight" placeholder="kg" min="20" max="500" step="0.1" />
-          </div>
-          <div class="form-group">
-            <label>Target Weight (kg)</label>
-            <input type="number" id="pTargetWeight" placeholder="kg" min="20" max="500" step="0.1" />
-          </div>
+        </div>
 
-          <div class="form-group">
-            <label>Health Goal</label>
-            <select id="pHealthGoal"></select>
+        <div class="form-card">
+          <div class="form-card-title">🎯 Health Goals</div>
+          <div class="form-grid">
+            <div class="field"><label>Health Goal</label><select id="pHealthGoal"></select></div>
+            <div class="field"><label>Activity Level</label><select id="pActivityLevel"></select></div>
+            <div class="field"><label>Dietary Preference</label><select id="pDietaryPref"></select></div>
+            <div class="field"><label>Meals Per Day</label>
+              <select id="pMealsPerDay">
+                <option value="2">2 meals</option>
+                <option value="3" selected>3 meals</option>
+                <option value="4">4 meals</option>
+                <option value="5">5 meals</option>
+                <option value="6">6 meals</option>
+              </select>
+            </div>
           </div>
-          <div class="form-group">
-            <label>Activity Level</label>
-            <select id="pActivityLevel"></select>
-          </div>
-          <div class="form-group">
-            <label>Dietary Preference</label>
-            <select id="pDietaryPref"></select>
-          </div>
-          <div class="form-group">
-            <label>Meals Per Day</label>
-            <select id="pMealsPerDay">
-              <option value="2">2 meals</option>
-              <option value="3" selected>3 meals</option>
-              <option value="4">4 meals</option>
-              <option value="5">5 meals</option>
-              <option value="6">6 meals</option>
-            </select>
-          </div>
+        </div>
 
-          <div class="form-group full-width">
-            <label>Medical Conditions (comma-separated)</label>
-            <input type="text" id="pMedical" placeholder="e.g. diabetes_type2, hypertension" />
+        <div class="form-card">
+          <div class="form-card-title">⚕️ Health Conditions & Restrictions</div>
+          <div class="form-grid">
+            <div class="field wide"><label>Medical Conditions <span class="label-hint">(comma-separated)</span></label>
+              <input type="text" id="pMedical" placeholder="e.g. diabetes_type2, hypertension" />
+            </div>
+            <div class="field wide"><label>Allergies / Intolerances <span class="label-hint">(comma-separated)</span></label>
+              <input type="text" id="pAllergies" placeholder="e.g. peanuts, gluten, lactose" />
+            </div>
+            <div class="field wide"><label>Disliked Foods <span class="label-hint">(comma-separated)</span></label>
+              <input type="text" id="pDisliked" placeholder="e.g. mushrooms, olives" />
+            </div>
           </div>
-          <div class="form-group full-width">
-            <label>Allergies / Intolerances (comma-separated)</label>
-            <input type="text" id="pAllergies" placeholder="e.g. peanuts, shellfish, lactose" />
-          </div>
-          <div class="form-group full-width">
-            <label>Disliked Foods (comma-separated)</label>
-            <input type="text" id="pDisliked" placeholder="e.g. mushrooms, olives" />
-          </div>
-          <div class="form-group full-width">
-            <label>Preferred Cuisines</label>
-            <div id="cuisineCheckboxes" class="checkbox-group"></div>
-          </div>
-          <div class="form-group full-width">
-            <label>Fitness Routine (describe)</label>
-            <textarea id="pFitness" rows="2" placeholder="e.g. 5km run 3x/week, weight training 4x/week"></textarea>
-          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">🍜 Cuisine Preferences</div>
+          <div id="cuisineCheckboxes" class="cuisine-grid"></div>
+        </div>
+
+        <div class="form-card">
+          <div class="form-card-title">🏃 Fitness Routine</div>
+          <textarea id="pFitness" rows="2" placeholder="e.g. 5km run 3x/week, weight training 4x/week"></textarea>
         </div>
 
         <div class="form-actions">
           <button type="submit" class="btn-primary">💾 Save Profile</button>
-          <button type="button" class="btn-ghost" onclick="resetProfile()">🗑 Reset Profile</button>
+          <button type="button" class="btn-ghost" onclick="resetProfile()">Reset</button>
         </div>
       </form>
-
-      <div id="profileStats" class="stats-cards hidden"></div>
     </div>
   </section>
 
-  <!-- ────────────────  MEAL PLAN PANEL  ──────────────── -->
+  <!-- ─────────────── MEAL PLAN ─────────────── -->
   <section class="panel" id="panel-mealplan">
-    <div class="panel-inner">
-      <div class="panel-hero">
+    <div class="panel-page">
+      <div class="page-hero">
         <h2>📅 Personalised Meal Planner</h2>
-        <p>Generate a complete AI-crafted meal plan tailored to your health goals and preferences.</p>
+        <p>AI-crafted meal plans tailored to your health goals, allergies, and cuisine preferences.</p>
       </div>
 
-      <div class="controls-row card">
-        <div class="form-group">
-          <label>Number of Days</label>
-          <select id="mpDays">
-            <option value="1">1 Day</option>
-            <option value="3">3 Days</option>
-            <option value="5">5 Days</option>
-            <option value="7" selected>7 Days</option>
-            <option value="14">14 Days</option>
-          </select>
+      <div class="action-card">
+        <div class="action-card-row">
+          <div class="field" style="min-width:160px;">
+            <label>Number of Days</label>
+            <select id="mpDays">
+              <option value="1">1 Day</option>
+              <option value="3">3 Days</option>
+              <option value="5">5 Days</option>
+              <option value="7" selected>7 Days</option>
+              <option value="14">14 Days</option>
+            </select>
+          </div>
+          <button class="btn-primary btn-lg" onclick="generateMealPlan()">
+            🍽 Generate Meal Plan
+          </button>
         </div>
-        <button class="btn-primary" onclick="generateMealPlan()">🍽 Generate Meal Plan</button>
       </div>
 
       <div id="mealPlanResult" class="result-card hidden"></div>
-      <div id="mealPlanFeedback" class="feedback-bar hidden">
+      <div id="mealPlanFeedback" class="rating-bar hidden">
         <span>Rate this meal plan:</span>
         <div class="stars" id="mpStars"></div>
       </div>
     </div>
   </section>
 
-  <!-- ────────────────  FOOD SWAP PANEL  ──────────────── -->
+  <!-- ─────────────── FOOD SWAP ─────────────── -->
   <section class="panel" id="panel-foodswap">
-    <div class="panel-inner">
-      <div class="panel-hero">
+    <div class="panel-page">
+      <div class="page-hero">
         <h2>🔄 Smart Food Swaps</h2>
-        <p>Enter foods you want to replace and get personalised, healthier alternatives.</p>
+        <p>Get AI-powered healthier alternatives for any food, tailored to your goals.</p>
       </div>
 
-      <div class="card">
-        <div class="form-group">
-          <label>Foods to swap (comma-separated)</label>
-          <input type="text" id="swapFoods" placeholder="e.g. white rice, butter, soda" />
+      <div class="action-card">
+        <div class="field">
+          <label>Foods to swap <span class="label-hint">(comma-separated)</span></label>
+          <input type="text" id="swapFoods" placeholder="e.g. white rice, butter, soda, white bread" />
         </div>
-        <div class="form-group">
-          <label>Reason for swap (optional)</label>
+        <div class="field">
+          <label>Reason for swap <span class="label-hint">(optional)</span></label>
           <input type="text" id="swapReason" placeholder="e.g. reduce sugar, increase protein, lower carbs" />
         </div>
         <button class="btn-primary" onclick="getSwaps()">🔄 Get Smart Swaps</button>
@@ -228,53 +263,66 @@
     </div>
   </section>
 
-  <!-- ────────────────  EXPLAIN FOOD PANEL  ──────────────── -->
+  <!-- ─────────────── EXPLAIN FOOD ─────────────── -->
   <section class="panel" id="panel-explain">
-    <div class="panel-inner">
-      <div class="panel-hero">
+    <div class="panel-page">
+      <div class="page-hero">
         <h2>🔬 Nutritional Explainer</h2>
-        <p>Deep-dive into the science behind any food or meal. Understand what you eat.</p>
+        <p>Deep-dive into the science behind any food or meal — know exactly what you eat.</p>
       </div>
 
-      <div class="card">
-        <div class="form-group">
+      <div class="action-card">
+        <div class="field">
           <label>Food or Meal to Explain</label>
-          <input type="text" id="explainFood" placeholder="e.g. quinoa, salmon with broccoli, Greek yogurt" 
-            onkeydown="if(event.key==='Enter') explainFoodItem()" />
+          <div class="input-with-btn">
+            <input type="text" id="explainFood" placeholder="e.g. quinoa, salmon with broccoli, Greek yogurt"
+              onkeydown="if(event.key==='Enter') explainFoodItem()" />
+            <button class="btn-primary" onclick="explainFoodItem()">Explain</button>
+          </div>
         </div>
-        <button class="btn-primary" onclick="explainFoodItem()">🔬 Explain Nutrition</button>
+        <div class="quick-pills">
+          <button class="chip-btn" onclick="quickExplain('avocado')">🥑 Avocado</button>
+          <button class="chip-btn" onclick="quickExplain('quinoa')">🌾 Quinoa</button>
+          <button class="chip-btn" onclick="quickExplain('salmon')">🐟 Salmon</button>
+          <button class="chip-btn" onclick="quickExplain('oats')">🥣 Oats</button>
+          <button class="chip-btn" onclick="quickExplain('spinach')">🥬 Spinach</button>
+          <button class="chip-btn" onclick="quickExplain('almonds')">🌰 Almonds</button>
+        </div>
       </div>
 
       <div id="explainResult" class="result-card hidden"></div>
     </div>
   </section>
 
-  <!-- ────────────────  IMAGE ANALYSIS PANEL  ──────────────── -->
+  <!-- ─────────────── IMAGE ANALYSIS ─────────────── -->
   <section class="panel" id="panel-image">
-    <div class="panel-inner">
-      <div class="panel-hero">
+    <div class="panel-page">
+      <div class="page-hero">
         <h2>📷 Image Analysis</h2>
         <p>Upload a food photo or grocery label for instant AI nutritional analysis.</p>
       </div>
 
-      <div class="card">
+      <div class="action-card">
         <div class="upload-zone" id="uploadZone"
-          ondragover="event.preventDefault(); this.classList.add('drag-over')"
-          ondragleave="this.classList.remove('drag-over')"
+          ondragover="event.preventDefault();this.classList.add('drag-active')"
+          ondragleave="this.classList.remove('drag-active')"
           ondrop="handleDrop(event)">
-          <div class="upload-icon">📷</div>
-          <p>Drag & drop an image here, or</p>
-          <label class="btn-outline" for="imageInput">Browse Image</label>
-          <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)" />
-          <p class="muted">Supports PNG, JPG, JPEG, WebP (max 10MB)</p>
+          <div class="upload-inner">
+            <div class="upload-emoji">📷</div>
+            <p class="upload-title">Drop an image here</p>
+            <p class="upload-sub">or</p>
+            <label class="btn-outline" for="imageInput">Browse File</label>
+            <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)" />
+            <p class="upload-hint">PNG, JPG, JPEG, WebP · Max 10MB</p>
+          </div>
         </div>
 
-        <div id="imagePreviewWrapper" class="hidden">
-          <img id="imagePreview" class="image-preview" alt="Uploaded food image" />
-          <button class="btn-ghost btn-sm" onclick="clearImage()">✕ Remove</button>
+        <div id="imagePreviewWrapper" class="preview-wrapper hidden">
+          <img id="imagePreview" class="preview-img" alt="Uploaded image" />
+          <button class="remove-btn" onclick="clearImage()">✕ Remove</button>
         </div>
 
-        <button class="btn-primary" id="analyseBtn" onclick="analyseImage()" disabled>
+        <button class="btn-primary btn-lg" id="analyseBtn" onclick="analyseImage()" disabled>
           🔍 Analyse Image
         </button>
       </div>
@@ -283,69 +331,70 @@
     </div>
   </section>
 
-  <!-- ────────────────  FOOD LOOKUP PANEL  ──────────────── -->
+  <!-- ─────────────── FOOD LOOKUP ─────────────── -->
   <section class="panel" id="panel-lookup">
-    <div class="panel-inner">
-      <div class="panel-hero">
+    <div class="panel-page">
+      <div class="page-hero">
         <h2>🔍 Food Nutrition Lookup</h2>
-        <p>Instantly look up calorie and macro data for any food from our database.</p>
+        <p>Instantly look up calorie and macro data for any food.</p>
       </div>
 
-      <div class="card">
-        <div class="form-group search-row">
-          <input type="text" id="lookupQuery" placeholder="e.g. chicken breast, avocado, oats"
-            oninput="searchFoodsLive()" onkeydown="if(event.key==='Enter') lookupFood()" />
-          <button class="btn-primary" onclick="lookupFood()">🔍 Look Up</button>
+      <div class="action-card">
+        <div class="field">
+          <label>Search Food</label>
+          <div class="input-with-btn">
+            <input type="text" id="lookupQuery" placeholder="e.g. chicken breast, avocado, brown rice"
+              oninput="searchFoodsLive()"
+              onkeydown="if(event.key==='Enter') lookupFood()" />
+            <button class="btn-primary" onclick="lookupFood()">Search</button>
+          </div>
         </div>
-        <div id="lookupSuggestions" class="tag-suggestions"></div>
+        <div id="lookupSuggestions" class="suggestion-tags"></div>
       </div>
 
       <div id="lookupResult" class="result-card hidden"></div>
     </div>
   </section>
 
-  <!-- ────────────────  SUGGESTIONS PANEL  ──────────────── -->
+  <!-- ─────────────── SUGGESTIONS ─────────────── -->
   <section class="panel" id="panel-suggestions">
-    <div class="panel-inner">
-      <div class="panel-hero">
-        <h2>✨ Adaptive Suggestions</h2>
-        <p>AI-powered meal suggestions that learn from your preferences and feedback.</p>
+    <div class="panel-page">
+      <div class="page-hero">
+        <h2>✨ AI Suggestions</h2>
+        <p>Personalised meal suggestions that adapt to your taste and feedback history.</p>
       </div>
 
-      <div class="card">
-        <p>Get personalised meal ideas based on your profile and feedback history. The more feedback you give, the smarter suggestions become!</p>
-        <button class="btn-primary" onclick="getSuggestions()">✨ Get My Suggestions</button>
+      <div class="action-card">
+        <p style="color:var(--muted);font-size:.88rem;margin-bottom:1rem;">The more feedback you give, the smarter your suggestions become. Rate meals to help NutriAI learn your preferences.</p>
+        <button class="btn-primary btn-lg" onclick="getSuggestions()">✨ Get My Suggestions</button>
       </div>
 
       <div id="suggestionsResult" class="result-card hidden"></div>
 
-      <!-- Feedback section -->
-      <div class="card" style="margin-top:1.5rem">
-        <h3>📝 Leave Feedback</h3>
-        <p class="muted">Help NutriAI learn your preferences</p>
-        <div class="form-grid" style="margin-top:1rem">
-          <div class="form-group">
-            <label>Food / Meal</label>
+      <div class="form-card" style="margin-top:1.5rem;">
+        <div class="form-card-title">📝 Leave Feedback</div>
+        <div class="form-grid">
+          <div class="field"><label>Food / Meal</label>
             <input type="text" id="fbItem" placeholder="e.g. Grilled chicken salad" />
           </div>
-          <div class="form-group">
-            <label>Type</label>
+          <div class="field"><label>Type</label>
             <select id="fbType">
               <option value="meal">Meal</option>
               <option value="swap">Food Swap</option>
               <option value="plan">Meal Plan</option>
             </select>
           </div>
-          <div class="form-group full-width">
-            <label>Rating</label>
+          <div class="field wide">
+            <label>Your Rating</label>
             <div class="stars" id="fbStars" data-rating="3"></div>
           </div>
-          <div class="form-group full-width">
-            <label>Note (optional)</label>
-            <input type="text" id="fbNote" placeholder="e.g. Too spicy, loved the flavour" />
+          <div class="field wide"><label>Note <span class="label-hint">(optional)</span></label>
+            <input type="text" id="fbNote" placeholder="e.g. Too spicy, loved the texture" />
           </div>
         </div>
-        <button class="btn-primary" onclick="submitFeedback()">Submit Feedback</button>
+        <div class="form-actions" style="margin-top:1rem;">
+          <button class="btn-primary" onclick="submitFeedback()">Submit Feedback</button>
+        </div>
       </div>
     </div>
   </section>
@@ -354,11 +403,14 @@
 
 <!-- Loading overlay -->
 <div class="loading-overlay hidden" id="loadingOverlay">
-  <div class="spinner"></div>
-  <p id="loadingText">Thinking…</p>
+  <div class="loading-card">
+    <div class="loader-ring"></div>
+    <p id="loadingText">Thinking…</p>
+    <span class="loading-sub">IBM Granite is processing</span>
+  </div>
 </div>
 
-<!-- Toast notification -->
+<!-- Toast -->
 <div class="toast hidden" id="toast"></div>
 
 <script src="/static/js/app.js"></script>

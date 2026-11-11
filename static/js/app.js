@@ -1,16 +1,15 @@
 /**
- * app.js  –  NutriAI Frontend
- * Handles all panel navigation, API calls, and UI interactions.
+ * app.js  –  NutriAI Enhanced Frontend
+ * Handles navigation, API calls, chat, forms, and all UI interactions.
  */
 
 "use strict";
 
 // ── State ─────────────────────────────────────────────────────────────────────
-let currentPanel      = "chat";
+let currentPanel = "chat";
 let selectedImageFile = null;
-let mealPlanText      = "";   // last generated plan (for feedback)
-let fbRating          = 3;
-let mpRating          = 0;
+let fbRating = 3;
+let mpRating = 0;
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,13 +17,16 @@ document.addEventListener("DOMContentLoaded", () => {
   loadProfile();
   checkHealth();
   buildStars("fbStars", 3, (r) => { fbRating = r; });
-  buildStars("mpStars", 0, (r) => { mpRating = r; });
+  buildStars("mpStars", 0, (r) => {
+    mpRating = r;
+    if (mpRating > 0) submitPlanFeedback(mpRating);
+  });
 });
 
 // ── Panel navigation ──────────────────────────────────────────────────────────
 function showPanel(name) {
   document.querySelectorAll(".panel").forEach(p => p.classList.remove("active"));
-  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.querySelectorAll(".nav-item").forEach(b => b.classList.remove("active"));
 
   const panel = document.getElementById("panel-" + name);
   const btn   = document.querySelector(`[data-panel="${name}"]`);
@@ -40,24 +42,29 @@ function showPanel(name) {
     explain:     "🔬 Explain Food",
     image:       "📷 Image Analysis",
     lookup:      "🔍 Food Lookup",
-    suggestions: "✨ Adaptive Suggestions",
+    suggestions: "✨ AI Suggestions",
   };
   document.getElementById("panelTitle").textContent = titles[name] || name;
 
   // Close sidebar on mobile
   if (window.innerWidth <= 768) {
     document.getElementById("sidebar").classList.remove("open");
+    document.getElementById("sidebarOverlay").classList.remove("visible");
   }
 }
 
-// ── Sidebar toggle ────────────────────────────────────────────────────────────
+// ── Sidebar ───────────────────────────────────────────────────────────────────
 function toggleSidebar() {
-  const sidebar = document.getElementById("sidebar");
+  const sidebar  = document.getElementById("sidebar");
+  const overlay  = document.getElementById("sidebarOverlay");
+  const wrapper  = document.getElementById("mainWrapper");
+
   if (window.innerWidth <= 768) {
     sidebar.classList.toggle("open");
+    overlay.classList.toggle("visible");
   } else {
     sidebar.classList.toggle("collapsed");
-    document.querySelector(".main-wrapper").classList.toggle("full");
+    wrapper.classList.toggle("expanded");
   }
 }
 document.getElementById("sidebarClose").addEventListener("click", toggleSidebar);
@@ -71,14 +78,14 @@ async function checkHealth() {
     const txt  = document.getElementById("statusText");
     if (data.granite_ready) {
       dot.className = "status-dot live";
-      txt.textContent = "IBM Granite: Live";
+      txt.textContent = "Granite: Live";
     } else {
       dot.className = "status-dot demo";
       txt.textContent = "Demo Mode";
     }
   } catch {
     document.getElementById("statusDot").className = "status-dot error";
-    document.getElementById("statusText").textContent = "Server error";
+    document.getElementById("statusText").textContent = "Offline";
   }
 }
 
@@ -87,11 +94,9 @@ async function loadMetadata() {
   try {
     const res  = await fetch("/api/metadata");
     const data = await res.json();
-
     populateSelect("pHealthGoal",    data.health_goals,        formatOption);
     populateSelect("pActivityLevel", data.activity_levels,     formatOption);
     populateSelect("pDietaryPref",   data.dietary_preferences, formatOption);
-
     buildCuisineCheckboxes(data.cuisines);
   } catch (e) {
     console.error("Metadata load error:", e);
@@ -101,6 +106,8 @@ async function loadMetadata() {
 function populateSelect(id, options, formatter) {
   const sel = document.getElementById(id);
   if (!sel) return;
+  // Remove existing dynamic options (keep first placeholder if any)
+  while (sel.options.length > 0) sel.remove(0);
   options.forEach(opt => {
     const el = document.createElement("option");
     el.value = opt;
@@ -116,6 +123,7 @@ function formatOption(val) {
 function buildCuisineCheckboxes(cuisines) {
   const container = document.getElementById("cuisineCheckboxes");
   if (!container) return;
+  container.innerHTML = "";
   cuisines.forEach(c => {
     const label = document.createElement("label");
     const cb    = document.createElement("input");
@@ -142,24 +150,22 @@ async function loadProfile() {
 }
 
 function fillProfileForm(p) {
-  setVal("pName",        p.name !== "User" ? p.name : "");
-  setVal("pAge",         p.age         || "");
-  setVal("pGender",      p.gender      || "");
-  setVal("pHeight",      p.height_cm   || "");
-  setVal("pWeight",      p.weight_kg   || "");
-  setVal("pTargetWeight",p.target_weight_kg || "");
-  setVal("pHealthGoal",  p.health_goal || "");
+  setVal("pName",         p.name !== "User" ? p.name : "");
+  setVal("pAge",          p.age         || "");
+  setVal("pGender",       p.gender      || "");
+  setVal("pHeight",       p.height_cm   || "");
+  setVal("pWeight",       p.weight_kg   || "");
+  setVal("pTargetWeight", p.target_weight_kg || "");
+  setVal("pHealthGoal",   p.health_goal || "");
   setVal("pActivityLevel", p.activity_level || "");
-  setVal("pDietaryPref", p.dietary_preference || "");
-  setVal("pMealsPerDay", p.meals_per_day || 3);
-  setVal("pMedical",     (p.medical_conditions || []).join(", "));
-  setVal("pAllergies",   (p.allergies          || []).join(", "));
-  setVal("pDisliked",    (p.disliked_foods     || []).join(", "));
-  setVal("pFitness",     p.fitness_routine || "");
+  setVal("pDietaryPref",  p.dietary_preference || "");
+  setVal("pMealsPerDay",  p.meals_per_day || 3);
+  setVal("pMedical",      (p.medical_conditions || []).join(", "));
+  setVal("pAllergies",    (p.allergies          || []).join(", "));
+  setVal("pDisliked",     (p.disliked_foods     || []).join(", "));
+  setVal("pFitness",      p.fitness_routine || "");
 
-  // Cuisine checkboxes
-  const checkboxes = document.querySelectorAll('input[name="cuisine"]');
-  checkboxes.forEach(cb => {
+  document.querySelectorAll('input[name="cuisine"]').forEach(cb => {
     cb.checked = (p.preferred_cuisines || []).includes(cb.value);
   });
 }
@@ -197,9 +203,9 @@ async function saveProfile(event) {
       showToast("Profile saved! ✓", "success");
       renderProfileStats(data, resp);
     } else {
-      showToast("Save failed: " + resp.message, "error");
+      showToast("Save failed: " + (resp.message || "Unknown error"), "error");
     }
-  } catch (e) {
+  } catch {
     hideLoading();
     showToast("Network error", "error");
   }
@@ -208,11 +214,12 @@ async function saveProfile(event) {
 function renderProfileStats(profile, extras) {
   const container = document.getElementById("profileStats");
   if (!container) return;
+
   const stats = [];
-  if (extras.bmi)          stats.push({ value: extras.bmi,            label: `BMI (${extras.bmi_category || ""})` });
+  if (extras.bmi)            stats.push({ value: extras.bmi,                    label: `BMI (${extras.bmi_category || ""})` });
   if (extras.daily_calories) stats.push({ value: extras.daily_calories + " kcal", label: "Daily Target" });
-  if (profile.weight_kg)   stats.push({ value: profile.weight_kg + " kg",  label: "Current Weight" });
-  if (profile.target_weight_kg) stats.push({ value: profile.target_weight_kg + " kg", label: "Target Weight" });
+  if (profile.weight_kg)     stats.push({ value: profile.weight_kg + " kg",     label: "Weight" });
+  if (profile.height_cm)     stats.push({ value: profile.height_cm + " cm",     label: "Height" });
 
   if (stats.length === 0) { container.classList.add("hidden"); return; }
 
@@ -223,17 +230,31 @@ function renderProfileStats(profile, extras) {
 }
 
 async function resetProfile() {
-  if (!confirm("Reset your profile and conversation?")) return;
+  if (!confirm("Reset your profile and conversation history?")) return;
   await postJSON("/api/profile/reset", {});
   location.reload();
 }
 
 // ── Chat ──────────────────────────────────────────────────────────────────────
+function fillChat(text) {
+  const input = document.getElementById("chatInput");
+  input.value = text;
+  autoResize(input);
+  input.focus();
+  // Hide suggestion pills after use
+  document.getElementById("chatSuggestions").style.display = "none";
+}
+
 function chatKeydown(e) {
   if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
     sendChat();
   }
+}
+
+function autoResize(el) {
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 160) + "px";
 }
 
 async function sendChat() {
@@ -243,44 +264,80 @@ async function sendChat() {
 
   appendMessage("user", msg);
   input.value = "";
+  input.style.height = "auto";
 
-  const typing = appendMessage("assistant", "…", true);
+  // Hide chat pills once user starts chatting
+  const pills = document.getElementById("chatSuggestions");
+  if (pills) pills.style.display = "none";
+
+  const typingEl = appendTyping();
   try {
     const res  = await postJSON("/api/chat", { message: msg });
     const data = await res.json();
-    typing.remove();
+    typingEl.remove();
     if (data.status === "ok") {
-      appendMessage("assistant", data.html, false, true);
+      appendMessage("assistant", data.html, true);
     } else {
       appendMessage("assistant", "Sorry, something went wrong. Please try again.");
     }
   } catch {
-    typing.remove();
+    typingEl.remove();
     appendMessage("assistant", "Network error. Please check your connection.");
   }
 }
 
-function appendMessage(role, content, isTyping = false, isHtml = false) {
+function appendMessage(role, content, isHtml = false) {
   const container = document.getElementById("chatMessages");
   const div       = document.createElement("div");
-  div.className   = `chat-message ${role}`;
+  div.className   = `chat-msg ${role}`;
 
   const avatar = document.createElement("div");
-  avatar.className = "avatar";
+  avatar.className = "msg-avatar";
   avatar.textContent = role === "user" ? "You" : "🤖";
 
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "msg-content";
+
   const bubble = document.createElement("div");
-  bubble.className = "bubble";
-  if (isTyping) {
-    bubble.innerHTML = '<span style="opacity:.5">NutriAI is thinking…</span>';
-  } else if (isHtml) {
+  bubble.className = "msg-bubble";
+  if (isHtml) {
     bubble.innerHTML = content;
   } else {
     bubble.textContent = content;
   }
 
+  const time = document.createElement("div");
+  time.className = "msg-time";
+  time.textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+
+  contentDiv.appendChild(bubble);
+  contentDiv.appendChild(time);
   div.appendChild(avatar);
-  div.appendChild(bubble);
+  div.appendChild(contentDiv);
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
+}
+
+function appendTyping() {
+  const container = document.getElementById("chatMessages");
+  const div       = document.createElement("div");
+  div.className   = "chat-msg assistant";
+
+  const avatar = document.createElement("div");
+  avatar.className = "msg-avatar";
+  avatar.textContent = "🤖";
+
+  const contentDiv = document.createElement("div");
+  contentDiv.className = "msg-content";
+
+  const bubble = document.createElement("div");
+  bubble.className = "msg-bubble";
+  bubble.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+
+  contentDiv.appendChild(bubble);
+  div.appendChild(avatar);
+  div.appendChild(contentDiv);
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
   return div;
@@ -290,25 +347,24 @@ async function clearChat() {
   await postJSON("/api/chat/clear", {});
   const container = document.getElementById("chatMessages");
   container.innerHTML = "";
-  appendMessage("assistant", "Conversation cleared. How can I help you today? 🥗", false, false);
+  appendMessage("assistant", "Conversation cleared. How can I help you today? 🥗");
+  // Show suggestions again
+  const pills = document.getElementById("chatSuggestions");
+  if (pills) pills.style.display = "";
 }
 
 // ── Meal Plan ─────────────────────────────────────────────────────────────────
 async function generateMealPlan() {
   const days = document.getElementById("mpDays").value;
-  showLoading(`Generating ${days}-day meal plan with IBM Granite…`);
+  showLoading(`Generating ${days}-day meal plan…`);
   try {
     const res  = await postJSON("/api/meal-plan", { days: parseInt(days) });
     const data = await res.json();
     hideLoading();
     if (data.status === "ok") {
-      mealPlanText = data.meal_plan;
       showResult("mealPlanResult", data.html);
       document.getElementById("mealPlanFeedback").classList.remove("hidden");
-      buildStars("mpStars", 0, (r) => {
-        mpRating = r;
-        submitPlanFeedback(r);
-      });
+      buildStars("mpStars", 0, (r) => { mpRating = r; submitPlanFeedback(r); });
     } else {
       showToast(data.message || "Failed to generate meal plan", "error");
     }
@@ -325,7 +381,7 @@ async function submitPlanFeedback(rating) {
     rating: rating,
     note:   "",
   });
-  showToast("Feedback recorded – thanks! ✓", "success");
+  showToast(`Thanks for the ${rating}★ rating!`, "success");
 }
 
 // ── Food Swaps ────────────────────────────────────────────────────────────────
@@ -336,14 +392,14 @@ async function getSwaps() {
 
   showLoading("Finding smart food swaps…");
   try {
-    const res  = await postJSON("/api/food-swap", { foods: foods.split(",").map(f => f.trim()), reason });
+    const res  = await postJSON("/api/food-swap", {
+      foods: foods.split(",").map(f => f.trim()).filter(Boolean),
+      reason
+    });
     const data = await res.json();
     hideLoading();
-    if (data.status === "ok") {
-      showResult("swapResult", data.html);
-    } else {
-      showToast(data.message || "Error getting swaps", "error");
-    }
+    if (data.status === "ok") showResult("swapResult", data.html);
+    else showToast(data.message || "Error getting swaps", "error");
   } catch {
     hideLoading();
     showToast("Network error", "error");
@@ -354,17 +410,22 @@ async function getSwaps() {
 async function explainFoodItem() {
   const food = getVal("explainFood").trim();
   if (!food) { showToast("Please enter a food name", "error"); return; }
+  await doExplain(food);
+}
 
-  showLoading(`Analysing nutrition for "${food}"…`);
+async function quickExplain(food) {
+  setVal("explainFood", food);
+  await doExplain(food);
+}
+
+async function doExplain(food) {
+  showLoading(`Analysing "${food}"…`);
   try {
     const res  = await postJSON("/api/explain", { food });
     const data = await res.json();
     hideLoading();
-    if (data.status === "ok") {
-      showResult("explainResult", data.html);
-    } else {
-      showToast(data.message || "Error", "error");
-    }
+    if (data.status === "ok") showResult("explainResult", data.html);
+    else showToast(data.message || "Error", "error");
   } catch {
     hideLoading();
     showToast("Network error", "error");
@@ -379,7 +440,7 @@ function handleImageSelect(event) {
 
 function handleDrop(event) {
   event.preventDefault();
-  document.getElementById("uploadZone").classList.remove("drag-over");
+  document.getElementById("uploadZone").classList.remove("drag-active");
   const file = event.dataTransfer.files[0];
   if (file) loadImageFile(file);
 }
@@ -388,8 +449,7 @@ function loadImageFile(file) {
   selectedImageFile = file;
   const reader = new FileReader();
   reader.onload = (e) => {
-    const preview = document.getElementById("imagePreview");
-    preview.src   = e.target.result;
+    document.getElementById("imagePreview").src = e.target.result;
     document.getElementById("imagePreviewWrapper").classList.remove("hidden");
     document.getElementById("uploadZone").classList.add("hidden");
     document.getElementById("analyseBtn").disabled = false;
@@ -409,7 +469,7 @@ function clearImage() {
 async function analyseImage() {
   if (!selectedImageFile) { showToast("No image selected", "error"); return; }
 
-  showLoading("Analysing food image with IBM Granite…");
+  showLoading("Analysing image with IBM Granite…");
   const formData = new FormData();
   formData.append("image", selectedImageFile);
 
@@ -417,11 +477,8 @@ async function analyseImage() {
     const res  = await fetch("/api/analyse-image", { method: "POST", body: formData });
     const data = await res.json();
     hideLoading();
-    if (data.status === "ok") {
-      showResult("imageResult", data.html);
-    } else {
-      showToast(data.message || "Analysis failed", "error");
-    }
+    if (data.status === "ok") showResult("imageResult", data.html);
+    else showToast(data.message || "Analysis failed", "error");
   } catch {
     hideLoading();
     showToast("Network error", "error");
@@ -430,6 +487,7 @@ async function analyseImage() {
 
 // ── Food Lookup ───────────────────────────────────────────────────────────────
 let _lookupTimer = null;
+
 function searchFoodsLive() {
   clearTimeout(_lookupTimer);
   const q = getVal("lookupQuery").trim();
@@ -440,17 +498,17 @@ function searchFoodsLive() {
       const data = await res.json();
       if (data.suggestions && data.suggestions.length) {
         const container = document.getElementById("lookupSuggestions");
-        container.innerHTML = data.suggestions.map(f =>
-          `<span class="tag" onclick="quickLookup('${f.name}')">${f.name}</span>`
-        ).join("");
+        container.innerHTML = data.suggestions
+          .map(f => `<span class="sug-tag" onclick="quickLookup('${f.name}')">${capitalize(f.name)}</span>`)
+          .join("");
       }
     } catch {}
-  }, 300);
+  }, 280);
 }
 
 async function lookupFood() {
   const q = getVal("lookupQuery").trim();
-  if (!q) { showToast("Enter a food name to look up", "error"); return; }
+  if (!q) { showToast("Enter a food name", "error"); return; }
   await quickLookup(q);
 }
 
@@ -464,19 +522,19 @@ async function quickLookup(food) {
     if (data.food && !data.food.error) {
       const f = data.food;
       const html = `
-        <h3>🥗 ${capitalize(f.name)}</h3>
+        <h2>🥗 ${capitalize(f.name)}</h2>
+        <p style="color:var(--muted);font-size:.8rem;margin-bottom:10px;">Nutritional values per 100g / serving · Source: ${f.source}</p>
         <table>
-          <tr><th>Nutrient</th><th>Per 100g</th></tr>
-          <tr><td>Calories</td><td><strong>${f.calories} kcal</strong></td></tr>
-          <tr><td>Protein</td><td>${f.protein} g</td></tr>
-          <tr><td>Carbohydrates</td><td>${f.carbs} g</td></tr>
-          <tr><td>Total Fat</td><td>${f.fat} g</td></tr>
-          <tr><td>Dietary Fiber</td><td>${f.fiber} g</td></tr>
-        </table>
-        <p class="muted">Source: ${f.source}</p>`;
+          <tr><th>Nutrient</th><th>Amount</th><th>Daily Value %</th></tr>
+          <tr><td><strong>Calories</strong></td><td><strong>${f.calories} kcal</strong></td><td>—</td></tr>
+          <tr><td>Protein</td><td>${f.protein} g</td><td>${Math.round((f.protein/50)*100)}%</td></tr>
+          <tr><td>Carbohydrates</td><td>${f.carbs} g</td><td>${Math.round((f.carbs/275)*100)}%</td></tr>
+          <tr><td>Total Fat</td><td>${f.fat} g</td><td>${Math.round((f.fat/78)*100)}%</td></tr>
+          <tr><td>Dietary Fiber</td><td>${f.fiber} g</td><td>${Math.round((f.fiber/28)*100)}%</td></tr>
+        </table>`;
       showResult("lookupResult", html);
     } else {
-      showResult("lookupResult", `<p>No nutritional data found for "<strong>${food}</strong>". Try using the Chat Assistant for detailed information.</p>`);
+      showResult("lookupResult", `<p>No data found for <strong>${food}</strong>. Try the Chat Assistant for detailed information.</p>`);
     }
   } catch {
     hideLoading();
@@ -491,11 +549,8 @@ async function getSuggestions() {
     const res  = await fetch("/api/suggestions");
     const data = await res.json();
     hideLoading();
-    if (data.status === "ok") {
-      showResult("suggestionsResult", data.html);
-    } else {
-      showToast("Error getting suggestions", "error");
-    }
+    if (data.status === "ok") showResult("suggestionsResult", data.html);
+    else showToast("Error getting suggestions", "error");
   } catch {
     hideLoading();
     showToast("Network error", "error");
@@ -505,8 +560,8 @@ async function getSuggestions() {
 // ── Feedback ──────────────────────────────────────────────────────────────────
 async function submitFeedback() {
   const item = getVal("fbItem").trim();
-  if (!item) { showToast("Please enter a food or meal name", "error"); return; }
-  if (!fbRating) { showToast("Please select a rating", "error"); return; }
+  if (!item)    { showToast("Please enter a food or meal name", "error"); return; }
+  if (!fbRating){ showToast("Please select a rating", "error"); return; }
 
   try {
     const res  = await postJSON("/api/feedback", {
@@ -529,7 +584,7 @@ async function submitFeedback() {
   }
 }
 
-// ── Stars widget ──────────────────────────────────────────────────────────────
+// ── Stars ─────────────────────────────────────────────────────────────────────
 function buildStars(containerId, initialRating, onChange) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -538,7 +593,7 @@ function buildStars(containerId, initialRating, onChange) {
 
   for (let i = 1; i <= 5; i++) {
     const span = document.createElement("span");
-    span.className = "star" + (i <= current ? " active" : "");
+    span.className = "star" + (i <= current ? " on" : "");
     span.textContent = "★";
     span.dataset.val = i;
     span.addEventListener("mouseover", () => highlightStars(container, i));
@@ -554,33 +609,33 @@ function buildStars(containerId, initialRating, onChange) {
 
 function highlightStars(container, count) {
   container.querySelectorAll(".star").forEach((s, idx) => {
-    s.classList.toggle("active", idx < count);
+    s.classList.toggle("on", idx < count);
   });
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-function getVal(id)       { const el = document.getElementById(id); return el ? el.value : ""; }
-function setVal(id, val)  { const el = document.getElementById(id); if (el) el.value = val; }
-function splitList(str)   { return str ? str.split(",").map(s => s.trim()).filter(Boolean) : []; }
-function capitalize(s)    { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+function getVal(id)      { const el = document.getElementById(id); return el ? el.value : ""; }
+function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
+function splitList(str)  { return str ? str.split(",").map(s => s.trim()).filter(Boolean) : []; }
+function capitalize(s)   { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
 
 function showResult(id, html) {
   const el = document.getElementById(id);
   if (!el) return;
   el.innerHTML = html;
   el.classList.remove("hidden");
-  el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
 }
 
 async function postJSON(url, body) {
   return fetch(url, {
-    method:  "POST",
+    method: "POST",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify(body),
+    body: JSON.stringify(body),
   });
 }
 
-function showLoading(text = "Processing with IBM Granite…") {
+function showLoading(text = "IBM Granite is thinking…") {
   document.getElementById("loadingText").textContent = text;
   document.getElementById("loadingOverlay").classList.remove("hidden");
 }
@@ -596,5 +651,5 @@ function showToast(message, type = "") {
   toast.className   = "toast" + (type ? " " + type : "");
   toast.classList.remove("hidden");
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
+  _toastTimer = setTimeout(() => toast.classList.add("hidden"), 3200);
 }
