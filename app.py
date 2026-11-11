@@ -293,7 +293,7 @@ def health_check():
 # ── Entry point ───────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    port  = int(os.getenv("PORT", 5000))
+    port  = int(os.getenv("PORT", 8080))
     debug = os.getenv("FLASK_ENV", "development") == "development"
     print(f"\n🥗  AI Nutrition Agent running at http://localhost:{port}")
     print(f"   Mode: {'LIVE (IBM Granite connected)' if agent.client.is_ready else 'DEMO (configure .env for Granite)'}")

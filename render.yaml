@@ -12,7 +12,7 @@ services:
       - key: IBM_WATSONX_URL
         value: https://us-south.ml.cloud.ibm.com
       - key: IBM_GRANITE_MODEL_ID
-        value: ibm/granite-13b-instruct-v2
+        value: ibm/granite-3-1-8b-base
       - key: IBM_API_KEY
         sync: false          # you fill this in the Render dashboard
       - key: IBM_PROJECT_ID

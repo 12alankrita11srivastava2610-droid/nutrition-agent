@@ -16,7 +16,7 @@ env/
 # Environment secrets - NEVER commit
 .env
 
-# IDE
+# IDE / Editor
 .vscode/
 .idea/
 
@@ -26,3 +26,13 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Bob artifacts
+.bob/
+
+# Presentation / submission docs (not needed for deployment)
+*.pptx
+*.pdf
+*testimonial*.html
+*langflow*.html
+*Problem_Statement*.html
