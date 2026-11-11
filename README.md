@@ -180,3 +180,4 @@ MIT License – Free for educational and non-commercial use.
 
 *Built for IBM Hackathon – Problem Statement #8: AI Nutrition Assistant*  
 *IBM Granite | watsonx.ai | Flask | IBM Cloud Lite*
+Live Link:nutrition-agent-01.vercel.app
