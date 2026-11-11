@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NutriAI – AI Nutrition Assistant | IBM Granite</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥗</text></svg>" />
+</head>
+<body>
+
+<!-- ═══════════════════════════  SIDEBAR  ════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">
+      <span class="logo-icon">🥗</span>
+      <div>
+        <div class="logo-title">NutriAI</div>
+        <div class="logo-sub">Powered by IBM Granite</div>
+      </div>
+    </div>
+    <button class="sidebar-toggle" id="sidebarClose" aria-label="Close sidebar">✕</button>
+  </div>
+
+  <nav class="sidebar-nav">
+    <button class="nav-btn active" data-panel="chat"        onclick="showPanel('chat')">💬 Chat Assistant</button>
+    <button class="nav-btn"        data-panel="profile"     onclick="showPanel('profile')">👤 My Profile</button>
+    <button class="nav-btn"        data-panel="mealplan"    onclick="showPanel('mealplan')">📅 Meal Planner</button>
+    <button class="nav-btn"        data-panel="foodswap"    onclick="showPanel('foodswap')">🔄 Food Swaps</button>
+    <button class="nav-btn"        data-panel="explain"     onclick="showPanel('explain')">🔬 Explain Food</button>
+    <button class="nav-btn"        data-panel="image"       onclick="showPanel('image')">📷 Image Analysis</button>
+    <button class="nav-btn"        data-panel="lookup"      onclick="showPanel('lookup')">🔍 Food Lookup</button>
+    <button class="nav-btn"        data-panel="suggestions" onclick="showPanel('suggestions')">✨ Suggestions</button>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="status-badge" id="statusBadge">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Checking…</span>
+    </div>
+  </div>
+</aside>
+
+<!-- ════════════════════════════  MAIN  ══════════════════════════════════ -->
+<div class="main-wrapper">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+    <h1 class="topbar-title" id="panelTitle">💬 Chat Assistant</h1>
+    <div class="topbar-actions">
+      <span class="ibm-badge">IBM Granite</span>
+    </div>
+  </header>
+
+  <!-- ────────────────  CHAT PANEL  ──────────────── -->
+  <section class="panel active" id="panel-chat">
+    <div class="chat-container">
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-message assistant">
+          <div class="avatar">🤖</div>
+          <div class="bubble">
+            <p>👋 Hello! I'm <strong>NutriAI</strong>, your AI-powered nutrition assistant built on IBM Granite.</p>
+            <p>I can help you with personalised meal plans, food swaps, nutritional breakdowns, and much more.</p>
+            <p><em>Complete your <strong>profile</strong> first for the most personalised advice!</em></p>
+          </div>
+        </div>
+      </div>
+      <div class="chat-input-row">
+        <textarea id="chatInput" class="chat-textarea" rows="2"
+          placeholder="Ask me anything about nutrition, meals, diets…" 
+          onkeydown="chatKeydown(event)"></textarea>
+        <button class="btn-send" onclick="sendChat()" aria-label="Send">➤</button>
+      </div>
+      <div class="chat-actions">
+        <button class="btn-ghost btn-sm" onclick="clearChat()">🗑 Clear Chat</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────  PROFILE PANEL  ──────────────── -->
+  <section class="panel" id="panel-profile">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>👤 My Health Profile</h2>
+        <p>Fill in your details for a fully personalised AI nutrition experience.</p>
+      </div>
+
+      <form id="profileForm" class="card-form" onsubmit="saveProfile(event)">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="pName" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <label>Age</label>
+            <input type="number" id="pAge" placeholder="Years" min="10" max="120" />
+          </div>
+          <div class="form-group">
+            <label>Gender</label>
+            <select id="pGender">
+              <option value="">Select…</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Height (cm)</label>
+            <input type="number" id="pHeight" placeholder="cm" min="50" max="250" />
+          </div>
+          <div class="form-group">
+            <label>Current Weight (kg)</label>
+            <input type="number" id="pWeight" placeholder="kg" min="20" max="500" step="0.1" />
+          </div>
+          <div class="form-group">
+            <label>Target Weight (kg)</label>
+            <input type="number" id="pTargetWeight" placeholder="kg" min="20" max="500" step="0.1" />
+          </div>
+
+          <div class="form-group">
+            <label>Health Goal</label>
+            <select id="pHealthGoal"></select>
+          </div>
+          <div class="form-group">
+            <label>Activity Level</label>
+            <select id="pActivityLevel"></select>
+          </div>
+          <div class="form-group">
+            <label>Dietary Preference</label>
+            <select id="pDietaryPref"></select>
+          </div>
+          <div class="form-group">
+            <label>Meals Per Day</label>
+            <select id="pMealsPerDay">
+              <option value="2">2 meals</option>
+              <option value="3" selected>3 meals</option>
+              <option value="4">4 meals</option>
+              <option value="5">5 meals</option>
+              <option value="6">6 meals</option>
+            </select>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Medical Conditions (comma-separated)</label>
+            <input type="text" id="pMedical" placeholder="e.g. diabetes_type2, hypertension" />
+          </div>
+          <div class="form-group full-width">
+            <label>Allergies / Intolerances (comma-separated)</label>
+            <input type="text" id="pAllergies" placeholder="e.g. peanuts, shellfish, lactose" />
+          </div>
+          <div class="form-group full-width">
+            <label>Disliked Foods (comma-separated)</label>
+            <input type="text" id="pDisliked" placeholder="e.g. mushrooms, olives" />
+          </div>
+          <div class="form-group full-width">
+            <label>Preferred Cuisines</label>
+            <div id="cuisineCheckboxes" class="checkbox-group"></div>
+          </div>
+          <div class="form-group full-width">
+            <label>Fitness Routine (describe)</label>
+            <textarea id="pFitness" rows="2" placeholder="e.g. 5km run 3x/week, weight training 4x/week"></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">💾 Save Profile</button>
+          <button type="button" class="btn-ghost" onclick="resetProfile()">🗑 Reset Profile</button>
+        </div>
+      </form>
+
+      <div id="profileStats" class="stats-cards hidden"></div>
+    </div>
+  </section>
+
+  <!-- ────────────────  MEAL PLAN PANEL  ──────────────── -->
+  <section class="panel" id="panel-mealplan">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>📅 Personalised Meal Planner</h2>
+        <p>Generate a complete AI-crafted meal plan tailored to your health goals and preferences.</p>
+      </div>
+
+      <div class="controls-row card">
+        <div class="form-group">
+          <label>Number of Days</label>
+          <select id="mpDays">
+            <option value="1">1 Day</option>
+            <option value="3">3 Days</option>
+            <option value="5">5 Days</option>
+            <option value="7" selected>7 Days</option>
+            <option value="14">14 Days</option>
+          </select>
+        </div>
+        <button class="btn-primary" onclick="generateMealPlan()">🍽 Generate Meal Plan</button>
+      </div>
+
+      <div id="mealPlanResult" class="result-card hidden"></div>
+      <div id="mealPlanFeedback" class="feedback-bar hidden">
+        <span>Rate this meal plan:</span>
+        <div class="stars" id="mpStars"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ────────────────  FOOD SWAP PANEL  ──────────────── -->
+  <section class="panel" id="panel-foodswap">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>🔄 Smart Food Swaps</h2>
+        <p>Enter foods you want to replace and get personalised, healthier alternatives.</p>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Foods to swap (comma-separated)</label>
+          <input type="text" id="swapFoods" placeholder="e.g. white rice, butter, soda" />
+        </div>
+        <div class="form-group">
+          <label>Reason for swap (optional)</label>
+          <input type="text" id="swapReason" placeholder="e.g. reduce sugar, increase protein, lower carbs" />
+        </div>
+        <button class="btn-primary" onclick="getSwaps()">🔄 Get Smart Swaps</button>
+      </div>
+
+      <div id="swapResult" class="result-card hidden"></div>
+    </div>
+  </section>
+
+  <!-- ────────────────  EXPLAIN FOOD PANEL  ──────────────── -->
+  <section class="panel" id="panel-explain">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>🔬 Nutritional Explainer</h2>
+        <p>Deep-dive into the science behind any food or meal. Understand what you eat.</p>
+      </div>
+
+      <div class="card">
+        <div class="form-group">
+          <label>Food or Meal to Explain</label>
+          <input type="text" id="explainFood" placeholder="e.g. quinoa, salmon with broccoli, Greek yogurt" 
+            onkeydown="if(event.key==='Enter') explainFoodItem()" />
+        </div>
+        <button class="btn-primary" onclick="explainFoodItem()">🔬 Explain Nutrition</button>
+      </div>
+
+      <div id="explainResult" class="result-card hidden"></div>
+    </div>
+  </section>
+
+  <!-- ────────────────  IMAGE ANALYSIS PANEL  ──────────────── -->
+  <section class="panel" id="panel-image">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>📷 Image Analysis</h2>
+        <p>Upload a food photo or grocery label for instant AI nutritional analysis.</p>
+      </div>
+
+      <div class="card">
+        <div class="upload-zone" id="uploadZone"
+          ondragover="event.preventDefault(); this.classList.add('drag-over')"
+          ondragleave="this.classList.remove('drag-over')"
+          ondrop="handleDrop(event)">
+          <div class="upload-icon">📷</div>
+          <p>Drag & drop an image here, or</p>
+          <label class="btn-outline" for="imageInput">Browse Image</label>
+          <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)" />
+          <p class="muted">Supports PNG, JPG, JPEG, WebP (max 10MB)</p>
+        </div>
+
+        <div id="imagePreviewWrapper" class="hidden">
+          <img id="imagePreview" class="image-preview" alt="Uploaded food image" />
+          <button class="btn-ghost btn-sm" onclick="clearImage()">✕ Remove</button>
+        </div>
+
+        <button class="btn-primary" id="analyseBtn" onclick="analyseImage()" disabled>
+          🔍 Analyse Image
+        </button>
+      </div>
+
+      <div id="imageResult" class="result-card hidden"></div>
+    </div>
+  </section>
+
+  <!-- ────────────────  FOOD LOOKUP PANEL  ──────────────── -->
+  <section class="panel" id="panel-lookup">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>🔍 Food Nutrition Lookup</h2>
+        <p>Instantly look up calorie and macro data for any food from our database.</p>
+      </div>
+
+      <div class="card">
+        <div class="form-group search-row">
+          <input type="text" id="lookupQuery" placeholder="e.g. chicken breast, avocado, oats"
+            oninput="searchFoodsLive()" onkeydown="if(event.key==='Enter') lookupFood()" />
+          <button class="btn-primary" onclick="lookupFood()">🔍 Look Up</button>
+        </div>
+        <div id="lookupSuggestions" class="tag-suggestions"></div>
+      </div>
+
+      <div id="lookupResult" class="result-card hidden"></div>
+    </div>
+  </section>
+
+  <!-- ────────────────  SUGGESTIONS PANEL  ──────────────── -->
+  <section class="panel" id="panel-suggestions">
+    <div class="panel-inner">
+      <div class="panel-hero">
+        <h2>✨ Adaptive Suggestions</h2>
+        <p>AI-powered meal suggestions that learn from your preferences and feedback.</p>
+      </div>
+
+      <div class="card">
+        <p>Get personalised meal ideas based on your profile and feedback history. The more feedback you give, the smarter suggestions become!</p>
+        <button class="btn-primary" onclick="getSuggestions()">✨ Get My Suggestions</button>
+      </div>
+
+      <div id="suggestionsResult" class="result-card hidden"></div>
+
+      <!-- Feedback section -->
+      <div class="card" style="margin-top:1.5rem">
+        <h3>📝 Leave Feedback</h3>
+        <p class="muted">Help NutriAI learn your preferences</p>
+        <div class="form-grid" style="margin-top:1rem">
+          <div class="form-group">
+            <label>Food / Meal</label>
+            <input type="text" id="fbItem" placeholder="e.g. Grilled chicken salad" />
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="fbType">
+              <option value="meal">Meal</option>
+              <option value="swap">Food Swap</option>
+              <option value="plan">Meal Plan</option>
+            </select>
+          </div>
+          <div class="form-group full-width">
+            <label>Rating</label>
+            <div class="stars" id="fbStars" data-rating="3"></div>
+          </div>
+          <div class="form-group full-width">
+            <label>Note (optional)</label>
+            <input type="text" id="fbNote" placeholder="e.g. Too spicy, loved the flavour" />
+          </div>
+        </div>
+        <button class="btn-primary" onclick="submitFeedback()">Submit Feedback</button>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /.main-wrapper -->
+
+<!-- Loading overlay -->
+<div class="loading-overlay hidden" id="loadingOverlay">
+  <div class="spinner"></div>
+  <p id="loadingText">Thinking…</p>
+</div>
+
+<!-- Toast notification -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>

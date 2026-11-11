@@ -1,0 +1,281 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>NutriAI Workflow – A4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#e8e8e8;display:flex;justify-content:center;align-items:flex-start;padding:24px;font-family:'Segoe UI',Arial,sans-serif;}
+
+/* A4 page */
+.page{
+  width:210mm;
+  min-height:297mm;
+  background:#ffffff;
+  padding:14mm 13mm 12mm;
+  box-shadow:0 4px 24px rgba(0,0,0,.22);
+}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;border-bottom:2.5px solid #0f62fe;padding-bottom:8px;margin-bottom:14px;}
+.header-left{display:flex;align-items:center;gap:10px;}
+.logo-circle{width:40px;height:40px;border-radius:50%;background:#0f62fe;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+.title{font-size:1.25rem;font-weight:700;color:#161616;}
+.title span{color:#0f62fe;}
+.subtitle{font-size:.68rem;color:#6f6f6f;margin-top:1px;}
+.ibm-tag{background:#0f62fe;color:#fff;font-size:.62rem;font-weight:700;padding:3px 8px;border-radius:10px;letter-spacing:.06em;}
+
+/* Flow wrapper */
+.flow{display:flex;flex-direction:column;gap:0;align-items:center;}
+
+/* Row */
+.row{display:flex;align-items:center;justify-content:center;gap:0;width:100%;}
+
+/* Box */
+.box{
+  border-radius:7px;
+  padding:7px 10px;
+  font-size:.68rem;
+  line-height:1.45;
+  text-align:center;
+  min-width:90px;
+  max-width:115px;
+}
+.box .bicon{font-size:1rem;display:block;margin-bottom:2px;}
+.box .btitle{font-weight:700;font-size:.7rem;}
+.box .bsub{font-size:.6rem;opacity:.8;margin-top:1px;}
+
+/* Colour variants */
+.b-blue  {background:#dbeafe;border:1.5px solid #3b82f6;color:#1e3a5f;}
+.b-green {background:#dcfce7;border:1.5px solid #16a34a;color:#14532d;}
+.b-teal  {background:#cffafe;border:1.5px solid #0891b2;color:#164e63;}
+.b-red   {background:#fee2e2;border:1.5px solid #dc2626;color:#7f1d1d;}
+.b-amber {background:#fef3c7;border:1.5px solid #d97706;color:#78350f;}
+.b-ibm   {background:#dbeafe;border:2px solid #0f62fe;color:#0f3460;}
+.b-purple{background:#f3e8ff;border:1.5px solid #9333ea;color:#3b0764;}
+.b-gray  {background:#f3f4f6;border:1.5px solid #9ca3af;color:#374151;}
+
+/* Arrows */
+.arr-right{display:flex;align-items:center;padding:0 4px;flex-shrink:0;}
+.arr-right svg{width:22px;height:14px;}
+
+.arr-down{display:flex;justify-content:center;height:22px;}
+.arr-down svg{width:14px;height:22px;}
+
+/* Multi-arrow (splits) */
+.split-row{display:flex;align-items:flex-start;justify-content:center;gap:0;width:100%;margin:0;}
+.split-col{display:flex;flex-direction:column;align-items:center;gap:0;}
+
+/* Connector line horizontal */
+.hline{height:1.5px;background:#9ca3af;flex:1;}
+.vline{width:1.5px;background:#9ca3af;flex:1;}
+
+/* Section label */
+.section-label{font-size:.58rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin:6px 0 4px;text-align:center;}
+
+/* Divider */
+.divider{width:100%;height:1px;background:#e5e7eb;margin:10px 0;}
+
+/* Legend */
+.legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;justify-content:center;}
+.leg{display:flex;align-items:center;gap:4px;font-size:.6rem;color:#374151;}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+
+/* Footer */
+.footer{margin-top:12px;text-align:center;font-size:.58rem;color:#9ca3af;border-top:1px solid #e5e7eb;padding-top:8px;}
+
+/* Tools grid */
+.tools-grid{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;width:100%;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  
+  <div class="header">
+    <div class="header-left">
+      <div class="logo-circle">🥗</div>
+      <div>
+        <div class="title">Nutri<span>AI</span> — Agent Workflow</div>
+        <div class="subtitle">AI-Powered Personalised Nutrition Assistant · Problem Statement #8</div>
+      </div>
+    </div>
+    <div class="ibm-tag">IBM Granite · watsonx.ai</div>
+  </div>
+
+  
+  <div class="flow">
+
+    
+    <div class="section-label">① User Inputs (Multimodal)</div>
+    <div class="row" style="gap:8px">
+      <div class="box b-blue">
+        <span class="bicon">📝</span>
+        <div class="btitle">Text Chat</div>
+        <div class="bsub">Questions &amp; Q&amp;A</div>
+      </div>
+      <div class="box b-blue">
+        <span class="bicon">🎤</span>
+        <div class="btitle">Voice Input</div>
+        <div class="bsub">Speech-to-Text</div>
+      </div>
+      <div class="box b-blue">
+        <span class="bicon">📷</span>
+        <div class="btitle">Image Upload</div>
+        <div class="bsub">Food photo / Label</div>
+      </div>
+    </div>
+
+    <div class="arr-down">
+      <svg><line x1="7" y1="0" x2="7" y2="16" stroke="#6b7280" stroke-width="1.5"></line><polygon points="3,14 7,21 11,14" fill="#6b7280"></polygon></svg>
+    </div>
+
+    
+    <div class="section-label">② Pre-processing</div>
+    <div class="row" style="gap:8px">
+      <div class="box b-teal">
+        <span class="bicon">🔍</span>
+        <div class="btitle">OCR Engine</div>
+        <div class="bsub">Pillow + Tesseract</div>
+      </div>
+      <div class="box b-green">
+        <span class="bicon">👤</span>
+        <div class="btitle">User Profile</div>
+        <div class="bsub">BMI · TDEE · Goals · Allergies</div>
+      </div>
+      <div class="box b-teal">
+        <span class="bicon">💾</span>
+        <div class="btitle">Memory Store</div>
+        <div class="bsub">History · Feedback</div>
+      </div>
+    </div>
+
+    <div class="arr-down">
+      <svg><line x1="7" y1="0" x2="7" y2="16" stroke="#6b7280" stroke-width="1.5"></line><polygon points="3,14 7,21 11,14" fill="#6b7280"></polygon></svg>
+    </div>
+
+    
+    <div class="section-label">③ Intent Router</div>
+    <div class="row">
+      <div class="box b-red" style="min-width:160px;max-width:180px">
+        <span class="bicon">🔀</span>
+        <div class="btitle">Request Classifier</div>
+        <div class="bsub">Identifies user intent and routes to correct tool</div>
+      </div>
+    </div>
+
+    <div class="arr-down">
+      <svg><line x1="7" y1="0" x2="7" y2="16" stroke="#6b7280" stroke-width="1.5"></line><polygon points="3,14 7,21 11,14" fill="#6b7280"></polygon></svg>
+    </div>
+
+    
+    <div class="section-label">④ Specialist Tool Modules</div>
+    <div class="tools-grid">
+      <div class="box b-amber">
+        <span class="bicon">📅</span>
+        <div class="btitle">Meal Planner</div>
+        <div class="bsub">1–14 day plans</div>
+      </div>
+      <div class="box b-amber">
+        <span class="bicon">🔄</span>
+        <div class="btitle">Food Swaps</div>
+        <div class="bsub">Healthier alternatives</div>
+      </div>
+      <div class="box b-amber">
+        <span class="bicon">🔬</span>
+        <div class="btitle">Explainer</div>
+        <div class="bsub">Nutrition science</div>
+      </div>
+      <div class="box b-amber">
+        <span class="bicon">🔍</span>
+        <div class="btitle">Food Lookup</div>
+        <div class="bsub">USDA · Nutritionix</div>
+      </div>
+      <div class="box b-amber">
+        <span class="bicon">✨</span>
+        <div class="btitle">Suggestions</div>
+        <div class="bsub">Adaptive &amp; personalised</div>
+      </div>
+    </div>
+
+    <div class="arr-down">
+      <svg><line x1="7" y1="0" x2="7" y2="16" stroke="#6b7280" stroke-width="1.5"></line><polygon points="3,14 7,21 11,14" fill="#6b7280"></polygon></svg>
+    </div>
+
+    
+    <div class="section-label">⑤ IBM Granite LLM (watsonx.ai)</div>
+    <div class="row">
+      <div class="box b-ibm" style="min-width:230px;max-width:260px;padding:10px 14px">
+        <span class="bicon">🤖</span>
+        <div class="btitle" style="font-size:.75rem">ibm/granite-13b-instruct-v2</div>
+        <div style="display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:5px">
+          <span style="background:#bfdbfe;border-radius:4px;padding:1px 5px;font-size:.58rem;color:#1e3a5f">System Persona</span>
+          <span style="background:#bfdbfe;border-radius:4px;padding:1px 5px;font-size:.58rem;color:#1e3a5f">Profile Context</span>
+          <span style="background:#bfdbfe;border-radius:4px;padding:1px 5px;font-size:.58rem;color:#1e3a5f">Task Prompt</span>
+          <span style="background:#bfdbfe;border-radius:4px;padding:1px 5px;font-size:.58rem;color:#1e3a5f">temp: 0.7</span>
+          <span style="background:#bfdbfe;border-radius:4px;padding:1px 5px;font-size:.58rem;color:#1e3a5f">max_tokens: 2048</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="arr-down">
+      <svg><line x1="7" y1="0" x2="7" y2="16" stroke="#6b7280" stroke-width="1.5"></line><polygon points="3,14 7,21 11,14" fill="#6b7280"></polygon></svg>
+    </div>
+
+    
+    <div class="section-label">⑥ Output &amp; Adaptive Feedback Loop</div>
+    <div class="row" style="gap:8px">
+      <div class="box b-purple">
+        <span class="bicon">💬</span>
+        <div class="btitle">Chat Response</div>
+        <div class="bsub">Markdown → HTML</div>
+      </div>
+      <div class="box b-purple">
+        <span class="bicon">🍽</span>
+        <div class="btitle">Meal Plan Card</div>
+        <div class="bsub">Days · Macros · List</div>
+      </div>
+      <div class="box b-purple">
+        <span class="bicon">⭐</span>
+        <div class="btitle">Feedback UI</div>
+        <div class="bsub">1–5 stars → Memory</div>
+      </div>
+    </div>
+
+    
+    <div style="display:flex;align-items:center;gap:6px;margin-top:8px;font-size:.62rem;color:#0891b2">
+      <svg width="130" height="14">
+        <defs><marker id="fba"><polygon points="0 0,6 2.5,0 5" fill="#0891b2"></polygon></marker></defs>
+        <line x1="0" y1="7" x2="122" y2="7" stroke="#0891b2" stroke-width="1.5" marker-end="url(#fba)"></line>
+      </svg>
+      <span>Feedback loops back to Memory Store for adaptive learning</span>
+    </div>
+
+  </div>
+
+  <div class="divider"></div>
+
+  
+  <div class="legend">
+    <div class="leg"><div class="leg-dot" style="background:#3b82f6"></div>User Input</div>
+    <div class="leg"><div class="leg-dot" style="background:#16a34a"></div>Profile &amp; Context</div>
+    <div class="leg"><div class="leg-dot" style="background:#0891b2"></div>Memory / OCR</div>
+    <div class="leg"><div class="leg-dot" style="background:#dc2626"></div>Intent Router</div>
+    <div class="leg"><div class="leg-dot" style="background:#d97706"></div>AI Tool Modules</div>
+    <div class="leg"><div class="leg-dot" style="background:#0f62fe"></div>IBM Granite LLM</div>
+    <div class="leg"><div class="leg-dot" style="background:#9333ea"></div>Output / UI</div>
+  </div>
+
+  <div class="footer">
+    NutriAI · IBM Granite (watsonx.ai) · Problem Statement #8 — The Smartest AI Nutrition Assistant  |  Made with IBM Bob
+  </div>
+
+</div>
+</body>
+</html>

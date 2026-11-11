@@ -1,0 +1,375 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1.0" />
+<title>NutriAI Architecture – Landscape A4</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#cbd5e1;display:flex;justify-content:center;align-items:flex-start;padding:20px;font-family:'Segoe UI',Arial,sans-serif;}
+
+/* A4 Landscape: 297mm × 210mm */
+.page{
+  width:297mm;
+  height:210mm;
+  background:#0b0f1e;
+  padding:8mm 10mm;
+  box-shadow:0 6px 32px rgba(0,0,0,.4);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+
+/* Header */
+.hdr{display:flex;align-items:center;justify-content:space-between;border-bottom:1.5px solid #1e3a5f;padding-bottom:5px;margin-bottom:7px;flex-shrink:0;}
+.hdr-left{display:flex;align-items:center;gap:8px;}
+.logo{width:32px;height:32px;background:#0f62fe;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:1rem;box-shadow:0 0 10px rgba(15,98,254,.5);}
+.htitle{font-size:1rem;font-weight:800;color:#fff;letter-spacing:-.01em;}
+.htitle span{color:#4db8ff;}
+.hsub{font-size:.58rem;color:#475569;margin-top:1px;}
+.hbadges{display:flex;gap:5px;align-items:center;}
+.badge{font-size:.55rem;font-weight:700;padding:2px 7px;border-radius:8px;letter-spacing:.05em;}
+.b1{background:#0f62fe;color:#fff;}
+.b2{background:#198038;color:#fff;}
+.b3{background:#1e293b;color:#94a3b8;border:1px solid #334155;}
+
+/* Main grid – 6 columns for 6 layers */
+.arch{display:flex;flex:1;gap:5px;align-items:stretch;min-height:0;}
+
+/* Layer column */
+.layer{display:flex;flex-direction:column;flex:1;min-width:0;}
+.lhdr{border-radius:5px 5px 0 0;padding:4px 6px;text-align:center;font-size:.55rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;}
+.lbody{flex:1;border-radius:0 0 5px 5px;padding:5px;display:flex;flex-direction:column;gap:4px;border-top:none;}
+
+/* Arrow between layers */
+.arr{display:flex;flex-direction:column;align-items:center;justify-content:center;width:18px;flex-shrink:0;gap:2px;}
+.aline{flex:1;width:1.5px;background:#1e3a5f;}
+.ahead{width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid #1e3a5f;}
+.alabel{font-size:.45rem;color:#334155;writing-mode:vertical-rl;text-orientation:mixed;letter-spacing:.04em;white-space:nowrap;}
+
+/* Box */
+.box{border-radius:5px;padding:5px 6px;text-align:center;}
+.bi{font-size:.85rem;display:block;margin-bottom:2px;}
+.bt{font-weight:700;font-size:.6rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bs{font-size:.52rem;line-height:1.35;opacity:.72;margin-top:1px;}
+.btag{display:inline-block;font-size:.48rem;padding:1px 4px;border-radius:3px;margin-top:3px;font-weight:600;}
+
+/* Colour themes */
+.bblue  {background:#0c1f44;border:1px solid #1d4ed8;color:#93c5fd;}
+.bgreen {background:#041f0e;border:1px solid #16a34a;color:#86efac;}
+.bteal  {background:#03201f;border:1px solid #0d9488;color:#5eead4;}
+.bamber {background:#150d00;border:1px solid #d97706;color:#fcd34d;}
+.bibm   {background:#010d20;border:1.5px solid #0f62fe;color:#93c5fd;box-shadow:0 0 8px rgba(15,98,254,.2);}
+.bpurple{background:#130820;border:1px solid #7c3aed;color:#c4b5fd;}
+.bred   {background:#180303;border:1px solid #dc2626;color:#fca5a5;}
+.bgray  {background:#0c111f;border:1px solid #334155;color:#94a3b8;}
+.bcyan  {background:#021520;border:1px solid #0891b2;color:#67e8f9;}
+
+/* Layer header themes */
+.lh1{background:#0f1e44;color:#93c5fd;}
+.lh2{background:#0a2020;color:#5eead4;}
+.lh3{background:#1a0f0f;color:#fca5a5;}
+.lh4{background:#010d20;color:#4db8ff;border:1px solid #0f62fe;}
+.lh5{background:#150d00;color:#fcd34d;}
+.lh6{background:#0c111f;color:#94a3b8;}
+
+.lb1{background:#07122a;border:1px solid #1e3a5f;}
+.lb2{background:#021512;border:1px solid #0d4a44;}
+.lb3{background:#100505;border:1px solid #3a1010;}
+.lb4{background:#010812;border:1px solid #0a2a4a;box-shadow:inset 0 0 12px rgba(15,98,254,.08);}
+.lb5{background:#0c0800;border:1px solid #3a2200;}
+.lb6{background:#080b14;border:1px solid #1e293b;}
+
+/* IBM Granite special */
+.granite-box{background:#010d20;border:1.5px solid #0f62fe;border-radius:6px;padding:6px;text-align:center;box-shadow:0 0 10px rgba(15,98,254,.25);flex:1;display:flex;flex-direction:column;justify-content:center;}
+.granite-box .gti{font-size:.85rem;}
+.granite-box .gtt{font-size:.62rem;font-weight:800;color:#4db8ff;margin:2px 0;}
+.granite-box .gts{font-size:.5rem;color:#475569;margin-bottom:4px;}
+.pchip{display:inline-block;background:#0f2044;border:1px solid #1d4ed8;border-radius:3px;padding:1px 4px;font-size:.46rem;color:#93c5fd;font-weight:600;margin:1px;}
+
+/* Footer */
+.foot{flex-shrink:0;border-top:1px solid #1e293b;padding-top:4px;margin-top:5px;display:flex;justify-content:space-between;align-items:center;}
+.legend{display:flex;gap:8px;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:3px;font-size:.5rem;color:#64748b;}
+.ld{width:7px;height:7px;border-radius:50%;}
+.foot-right{font-size:.5rem;color:#334155;}
+
+@media print{
+  body{background:#fff;padding:0;}
+  .page{box-shadow:none;}
+  @page{size:A4 landscape;margin:0;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  
+  <div class="hdr">
+    <div class="hdr-left">
+      <div class="logo">🥗</div>
+      <div>
+        <div class="htitle">Nutri<span>AI</span> — System Architecture Blueprint</div>
+        <div class="hsub">Problem Statement #8 · The Smartest AI Nutrition Assistant · Full-Stack · Multimodal · Adaptive</div>
+      </div>
+    </div>
+    <div class="hbadges">
+      <span class="badge b1">IBM Granite</span>
+      <span class="badge b2">watsonx.ai</span>
+      <span class="badge b3">Flask · Python 3.14</span>
+    </div>
+  </div>
+
+  
+  <div class="arch">
+
+    
+    <div class="layer">
+      <div class="lhdr lh1">① Presentation</div>
+      <div class="lbody lb1">
+        <div class="box bblue">
+          <span class="bi">🌐</span>
+          <div class="bt">Web Browser SPA</div>
+          <div class="bs">HTML5 · CSS3 · Vanilla JS<br />8 interactive panels</div>
+          <span class="btag" style="background:#0f2044;color:#93c5fd">IBM Design System</span>
+        </div>
+        <div class="box bblue">
+          <span class="bi">📝</span>
+          <div class="bt">Text Chat</div>
+          <div class="bs">Real-time Q&amp;A<br />Session history</div>
+        </div>
+        <div class="box bblue">
+          <span class="bi">🎤</span>
+          <div class="bt">Voice Input</div>
+          <div class="bs">Speech-to-Text<br />NLP processing</div>
+        </div>
+        <div class="box bblue">
+          <span class="bi">📷</span>
+          <div class="bt">Image Upload</div>
+          <div class="bs">Food photo · Labels<br />Drag &amp; drop</div>
+        </div>
+        <div class="box bblue">
+          <span class="bi">⭐</span>
+          <div class="bt">Feedback UI</div>
+          <div class="bs">1–5 star ratings<br />Adaptive loop</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="arr">
+      <div class="aline"></div>
+      <div class="ahead"></div>
+      <div class="alabel">REST · JSON</div>
+    </div>
+
+    
+    <div class="layer">
+      <div class="lhdr lh2">② API Gateway</div>
+      <div class="lbody lb2">
+        <div class="box bteal">
+          <span class="bi">🌶</span>
+          <div class="bt">Flask 3.0</div>
+          <div class="bs">WSGI · Flask-CORS<br />Session management</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">💬</span>
+          <div class="bt">POST /chat</div>
+          <div class="bs">Conversational Q&amp;A</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">📅</span>
+          <div class="bt">POST /meal-plan</div>
+          <div class="bs">1–14 day planner</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">🔄</span>
+          <div class="bt">POST /food-swap</div>
+          <div class="bs">Smart alternatives</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">🔬</span>
+          <div class="bt">POST /explain</div>
+          <div class="bs">Nutrition science</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">📷</span>
+          <div class="bt">POST /analyse-image</div>
+          <div class="bs">OCR + vision</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">✨</span>
+          <div class="bt">GET /suggestions</div>
+          <div class="bs">Adaptive recs</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="arr">
+      <div class="aline"></div>
+      <div class="ahead"></div>
+      <div class="alabel">Function calls</div>
+    </div>
+
+    
+    <div class="layer">
+      <div class="lhdr lh3">③ Agent Core</div>
+      <div class="lbody lb3">
+        <div class="box bred">
+          <span class="bi">🔀</span>
+          <div class="bt">Intent Router</div>
+          <div class="bs">Classifies request<br />Routes to tool</div>
+        </div>
+        <div class="box bgreen">
+          <span class="bi">👤</span>
+          <div class="bt">Profile Manager</div>
+          <div class="bs">BMI · TDEE · Goals<br />Allergies · Cuisines</div>
+          <span class="btag" style="background:#052e16;color:#86efac">Mifflin-St Jeor</span>
+        </div>
+        <div class="box bcyan">
+          <span class="bi">💾</span>
+          <div class="bt">Memory Store</div>
+          <div class="bs">Chat history<br />Liked / Disliked</div>
+        </div>
+        <div class="box bamber">
+          <span class="bi">📐</span>
+          <div class="bt">Prompt Builder</div>
+          <div class="bs">6 task templates<br />Profile injection</div>
+        </div>
+        <div class="box bpurple">
+          <span class="bi">🔁</span>
+          <div class="bt">Adaptive Engine</div>
+          <div class="bs">Feedback → Memory<br />→ Better recs</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="arr">
+      <div class="aline"></div>
+      <div class="ahead"></div>
+      <div class="alabel">Prompt · Context</div>
+    </div>
+
+    
+    <div class="layer" style="flex:1.2">
+      <div class="lhdr lh4">④ IBM Granite LLM — watsonx.ai</div>
+      <div class="lbody lb4">
+        <div class="granite-box">
+          <div class="gti">🤖</div>
+          <div class="gtt">ibm/granite-13b-instruct-v2</div>
+          <div class="gts">IBM watsonx.ai · ibm-watsonx-ai SDK · us-south.ml.cloud.ibm.com · IBM Cloud IAM</div>
+          <div>
+            <span class="pchip">System Persona</span>
+            <span class="pchip">User Profile Context</span>
+            <span class="pchip">Task Prompt</span>
+            <span class="pchip">temperature: 0.7</span>
+            <span class="pchip">top_p: 0.95</span>
+            <span class="pchip">top_k: 50</span>
+            <span class="pchip">max_new_tokens: 2048</span>
+            <span class="pchip">repetition_penalty: 1.1</span>
+            <span class="pchip">Demo / Live mode</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="arr">
+      <div class="aline"></div>
+      <div class="ahead"></div>
+      <div class="alabel">Tool data</div>
+    </div>
+
+    
+    <div class="layer">
+      <div class="lhdr lh5">⑤ Data &amp; Tools</div>
+      <div class="lbody lb5">
+        <div class="box bamber">
+          <span class="bi">🗄</span>
+          <div class="bt">Built-in Food DB</div>
+          <div class="bs">30+ foods · Macros<br />Zero API needed</div>
+        </div>
+        <div class="box bamber">
+          <span class="bi">🇺🇸</span>
+          <div class="bt">USDA FoodData</div>
+          <div class="bs">Central REST API<br />Free tier</div>
+        </div>
+        <div class="box bamber">
+          <span class="bi">🥦</span>
+          <div class="bt">Nutritionix API</div>
+          <div class="bs">NL food queries<br />Detailed macros</div>
+        </div>
+        <div class="box bteal">
+          <span class="bi">👁</span>
+          <div class="bt">Tesseract OCR</div>
+          <div class="bs">Label extraction<br />Pillow preprocess</div>
+        </div>
+        <div class="box bpurple">
+          <span class="bi">📊</span>
+          <div class="bt">Feedback Store</div>
+          <div class="bs">Star ratings<br />Adaptive memory</div>
+        </div>
+      </div>
+    </div>
+
+    
+    <div class="arr">
+      <div class="aline"></div>
+      <div class="ahead"></div>
+      <div class="alabel">Deploy</div>
+    </div>
+
+    
+    <div class="layer">
+      <div class="lhdr lh6">⑥ Infrastructure</div>
+      <div class="lbody lb6">
+        <div class="box bgray">
+          <span class="bi">🐍</span>
+          <div class="bt">Python 3.14</div>
+          <div class="bs">Runtime · venv<br />pip packages</div>
+        </div>
+        <div class="box bgray">
+          <span class="bi">⚙</span>
+          <div class="bt">Gunicorn</div>
+          <div class="bs">Production WSGI<br />Multi-worker</div>
+        </div>
+        <div class="box bibm">
+          <span class="bi">☁</span>
+          <div class="bt">IBM Cloud Lite</div>
+          <div class="bs">Free tier hosting<br />IAM auth</div>
+        </div>
+        <div class="box bgray">
+          <span class="bi">🔒</span>
+          <div class="bt">.env Secrets</div>
+          <div class="bs">python-dotenv<br />API key isolation</div>
+        </div>
+        <div class="box bgray">
+          <span class="bi">🌍</span>
+          <div class="bt">0.0.0.0:5000</div>
+          <div class="bs">LAN accessible<br />Debug / Prod modes</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  
+  <div class="foot">
+    <div class="legend">
+      <div class="li"><div class="ld" style="background:#1d4ed8"></div>Presentation</div>
+      <div class="li"><div class="ld" style="background:#0d9488"></div>API Gateway</div>
+      <div class="li"><div class="ld" style="background:#dc2626"></div>Agent Core</div>
+      <div class="li"><div class="ld" style="background:#0f62fe"></div>IBM Granite LLM</div>
+      <div class="li"><div class="ld" style="background:#d97706"></div>Data &amp; Tools</div>
+      <div class="li"><div class="ld" style="background:#334155"></div>Infrastructure</div>
+      <div class="li"><div class="ld" style="background:#7c3aed"></div>Adaptive / Memory</div>
+    </div>
+    <div class="foot-right">NutriAI · IBM Granite · watsonx.ai · Problem Statement #8 · Made with IBM Bob</div>
+  </div>
+
+</div>
+</body>
+</html>
