@@ -30,7 +30,15 @@ from image_handler  import (
 
 # ── App setup ─────────────────────────────────────────────────────────────────
 
-app = Flask(__name__, static_folder="static", template_folder="templates")
+# Use absolute paths so Flask finds templates/static from any working directory
+# (needed for Vercel serverless which runs from api/)
+_ROOT = os.path.dirname(os.path.abspath(__file__))
+
+app = Flask(
+    __name__,
+    static_folder=os.path.join(_ROOT, "static"),
+    template_folder=os.path.join(_ROOT, "templates"),
+)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "nutrition-agent-dev-secret")
 CORS(app)
 
