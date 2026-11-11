@@ -1,16 +1,6 @@
+
 {
-  "version": 2,
-  "name": "nutriai",
-  "routes": [
-    {
-      "src": "/static/(.*)",
-      "dest": "/static/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.py"
-    }
-  ],
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "env": {
     "FLASK_ENV": "production"
   }

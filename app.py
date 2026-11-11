@@ -7,7 +7,11 @@ Exposes REST API endpoints consumed by the frontend.
 import os
 import uuid
 import json
-import markdown as md
+try:
+    import markdown as md
+    _MD_AVAILABLE = True
+except ImportError:
+    _MD_AVAILABLE = False
 from flask import (
     Flask, request, jsonify, session,
     render_template, send_from_directory
@@ -54,7 +58,32 @@ def get_session_id() -> str:
 
 def md_to_html(text: str) -> str:
     """Convert markdown response to HTML for frontend rendering."""
-    return md.markdown(text, extensions=["tables", "fenced_code", "nl2br"])
+    if _MD_AVAILABLE:
+        return md.markdown(text, extensions=["tables", "fenced_code", "nl2br"])
+    # Fallback: basic HTML conversion without the markdown package
+    import html
+    lines = text.split("\n")
+    out = []
+    for line in lines:
+        escaped = html.escape(line)
+        if escaped.startswith("### "):
+            out.append(f"<h3>{escaped[4:]}</h3>")
+        elif escaped.startswith("## "):
+            out.append(f"<h2>{escaped[3:]}</h2>")
+        elif escaped.startswith("# "):
+            out.append(f"<h1>{escaped[2:]}</h1>")
+        elif escaped.startswith("- ") or escaped.startswith("* "):
+            out.append(f"<li>{escaped[2:]}</li>")
+        elif escaped.startswith("**") and escaped.endswith("**"):
+            out.append(f"<p><strong>{escaped[2:-2]}</strong></p>")
+        elif escaped.strip():
+            # Bold inline
+            import re
+            escaped = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", escaped)
+            out.append(f"<p>{escaped}</p>")
+        else:
+            out.append("<br>")
+    return "\n".join(out)
 
 
 # ── Routes ────────────────────────────────────────────────────────────────────
