@@ -152,11 +152,8 @@ Each feature uses a carefully crafted prompt template:
 2. **Task-specific instructions** – Precise requirements (calories, allergies, cuisines, goals)
 3. **Output format requirements** – Structured markdown for clean rendering
 
-### Demo Mode (no credentials)
+Live Link:nutrition-agent-01.vercel.app
 
-The app runs in **Demo Mode** when IBM credentials are not configured, returning informative placeholder responses so the full UI can be demonstrated.
-
----
 
 ## 📊 Adaptive Learning
 
