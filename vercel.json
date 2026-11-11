@@ -1,19 +1,6 @@
 {
   "version": 2,
   "name": "nutriai",
-  "builds": [
-    {
-      "src": "api/index.py",
-      "use": "@vercel/python",
-      "config": {
-        "maxLambdaSize": "50mb"
-      }
-    },
-    {
-      "src": "static/**",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/static/(.*)",
@@ -21,7 +8,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "api/index.py"
+      "dest": "/api/index.py"
     }
   ],
   "env": {

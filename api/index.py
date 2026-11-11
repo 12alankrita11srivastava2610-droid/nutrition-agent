@@ -1,16 +1,16 @@
 """
 api/index.py
-Vercel serverless entry point for NutriAI Flask app.
-Vercel's @vercel/python runtime calls the `app` object as a WSGI handler.
+Vercel serverless WSGI entry point for NutriAI.
+Vercel's @vercel/python runtime auto-detects this file and calls `app`.
 """
 
 import sys
 import os
 
-# Add the project root to the Python path so all modules are importable
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add project root to path so all modules resolve correctly
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, ROOT)
 
-from app import app  # noqa: E402 – import after sys.path is patched
+from app import app  # noqa: E402
 
-# Vercel looks for a variable named `app` in this file
-# The Flask app object IS the WSGI callable
+# Vercel looks for the `app` variable as the WSGI callable
