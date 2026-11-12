@@ -67,14 +67,14 @@
 </aside>
 
 <!-- Sidebar overlay (mobile) -->
-<div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true" onclick="toggleSidebar()"></div>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
 <!-- ══════════════════ MAIN ══════════════════ -->
 <div class="main-wrapper" id="mainWrapper">
 
   <!-- Topbar -->
   <header class="topbar">
-    <button class="hamburger" id="hamburger" aria-label="Open navigation" aria-controls="sidebar" aria-expanded="false" onclick="toggleSidebar()">
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
       <span></span><span></span><span></span>
     </button>
     <div class="topbar-center">
@@ -88,7 +88,7 @@
   <!-- ─────────────── CHAT ─────────────── -->
   <section class="panel active" id="panel-chat">
     <div class="chat-wrap">
-      <div class="chat-messages" id="chatMessages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Conversation">
+      <div class="chat-messages" id="chatMessages">
         <div class="chat-msg assistant">
           <div class="msg-avatar">🤖</div>
           <div class="msg-content">
@@ -109,7 +109,7 @@
       </div>
 
       <div class="chat-input-bar">
-        <textarea id="chatInput" class="chat-input" aria-label="Message to NutriAI" rows="1
+        <textarea id="chatInput" class="chat-input" rows="1"
           placeholder="Ask about nutrition, meals, diets…"
           onkeydown="chatKeydown(event)"
           oninput="autoResize(this)"></textarea>
@@ -138,9 +138,9 @@
         <div class="form-card">
           <div class="form-card-title">🧍 Personal Details</div>
           <div class="form-grid">
-            <div class="field"><label for="pName">Name</label><input type="text" id="pName" placeholder="Your name" /></div>
-            <div class="field"><label for="pAge">Age</label><input type="number" id="pAge" placeholder="Years" min="10" max="120" /></div>
-            <div class="field"><label for="pGender">Gender</label>
+            <div class="field"><label>Name</label><input type="text" id="pName" placeholder="Your name" /></div>
+            <div class="field"><label>Age</label><input type="number" id="pAge" placeholder="Years" min="10" max="120" /></div>
+            <div class="field"><label>Gender</label>
               <select id="pGender">
                 <option value="">Select…</option>
                 <option value="male">Male</option>
@@ -148,9 +148,9 @@
                 <option value="other">Other</option>
               </select>
             </div>
-            <div class="field"><label for="pHeight">Height (cm)</label><input type="number" id="pHeight" placeholder="e.g. 165" min="50" max="250" /></div>
-            <div class="field"><label for="pWeight">Weight (kg)</label><input type="number" id="pWeight" placeholder="e.g. 65" min="20" max="500" step="0.1" /></div>
-            <div class="field"><label for="pTargetWeight">Target Weight (kg)</label><input type="number" id="pTargetWeight" placeholder="e.g. 60" min="20" max="500" step="0.1" /></div>
+            <div class="field"><label>Height (cm)</label><input type="number" id="pHeight" placeholder="e.g. 165" min="50" max="250" /></div>
+            <div class="field"><label>Weight (kg)</label><input type="number" id="pWeight" placeholder="e.g. 65" min="20" max="500" step="0.1" /></div>
+            <div class="field"><label>Target Weight (kg)</label><input type="number" id="pTargetWeight" placeholder="e.g. 60" min="20" max="500" step="0.1" /></div>
           </div>
         </div>
 
@@ -160,7 +160,7 @@
             <div class="field"><label>Health Goal</label><select id="pHealthGoal"></select></div>
             <div class="field"><label>Activity Level</label><select id="pActivityLevel"></select></div>
             <div class="field"><label>Dietary Preference</label><select id="pDietaryPref"></select></div>
-            <div class="field"><label for="pMealsPerDay">Meals Per Day</label>
+            <div class="field"><label>Meals Per Day</label>
               <select id="pMealsPerDay">
                 <option value="2">2 meals</option>
                 <option value="3" selected>3 meals</option>
@@ -216,7 +216,7 @@
       <div class="action-card">
         <div class="action-card-row">
           <div class="field" style="min-width:160px;">
-            <label for="mpDays">Number of Days</label>
+            <label>Number of Days</label>
             <select id="mpDays">
               <option value="1">1 Day</option>
               <option value="3">3 Days</option>
@@ -312,7 +312,7 @@
             <p class="upload-title">Drop an image here</p>
             <p class="upload-sub">or</p>
             <label class="btn-outline" for="imageInput">Browse File</label>
-            <input type="file" id="imageInput" accept="image/png,image/jpeg,image/webp,image/gif" style="display:none" onchange="handleImageSelect(event)" />
+            <input type="file" id="imageInput" accept="image/*" style="display:none" onchange="handleImageSelect(event)" />
             <p class="upload-hint">PNG, JPG, JPEG, WebP · Max 10MB</p>
           </div>
         </div>
@@ -374,10 +374,10 @@
       <div class="form-card" style="margin-top:1.5rem;">
         <div class="form-card-title">📝 Leave Feedback</div>
         <div class="form-grid">
-          <div class="field"><label for="fbItem">Food / Meal</label>
+          <div class="field"><label>Food / Meal</label>
             <input type="text" id="fbItem" placeholder="e.g. Grilled chicken salad" />
           </div>
-          <div class="field"><label for="fbType">Type</label>
+          <div class="field"><label>Type</label>
             <select id="fbType">
               <option value="meal">Meal</option>
               <option value="swap">Food Swap</option>
@@ -402,7 +402,7 @@
 </div><!-- /.main-wrapper -->
 
 <!-- Loading overlay -->
-<div class="loading-overlay hidden" id="loadingOverlay" role="status" aria-live="polite" aria-label="NutriAI is processing your request">
+<div class="loading-overlay hidden" id="loadingOverlay">
   <div class="loading-card">
     <div class="loader-ring"></div>
     <p id="loadingText">Thinking…</p>
@@ -411,7 +411,7 @@
 </div>
 
 <!-- Toast -->
-<div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
+<div class="toast hidden" id="toast"></div>
 
 <script src="/static/js/app.js"></script>
 </body>

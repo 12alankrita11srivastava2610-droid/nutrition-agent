@@ -12,10 +12,9 @@ let fbRating = 3;
 let mpRating = 0;
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", async () => {
-  // Profile values depend on metadata-generated options and cuisine checkboxes.
-  await loadMetadata();
-  await loadProfile();
+document.addEventListener("DOMContentLoaded", () => {
+  loadMetadata();
+  loadProfile();
   checkHealth();
   buildStars("fbStars", 3, (r) => { fbRating = r; });
   buildStars("mpStars", 0, (r) => {
@@ -74,7 +73,7 @@ document.getElementById("sidebarClose").addEventListener("click", toggleSidebar)
 async function checkHealth() {
   try {
     const res  = await fetch("/api/health");
-    const data = await readJSON(res);
+    const data = await res.json();
     const dot  = document.getElementById("statusDot");
     const txt  = document.getElementById("statusText");
     if (data.granite_ready) {
@@ -94,7 +93,7 @@ async function checkHealth() {
 async function loadMetadata() {
   try {
     const res  = await fetch("/api/metadata");
-    const data = await readJSON(res);
+    const data = await res.json();
     populateSelect("pHealthGoal",    data.health_goals,        formatOption);
     populateSelect("pActivityLevel", data.activity_levels,     formatOption);
     populateSelect("pDietaryPref",   data.dietary_preferences, formatOption);
@@ -141,7 +140,7 @@ function buildCuisineCheckboxes(cuisines) {
 async function loadProfile() {
   try {
     const res  = await fetch("/api/profile");
-    const data = await readJSON(res);
+    const data = await res.json();
     if (data.status !== "ok") return;
     fillProfileForm(data.profile);
     if (data.profile.bmi) renderProfileStats(data.profile, data.profile);
@@ -274,7 +273,7 @@ async function sendChat() {
   const typingEl = appendTyping();
   try {
     const res  = await postJSON("/api/chat", { message: msg });
-    const data = await readJSON(res);
+    const data = await res.json();
     typingEl.remove();
     if (data.status === "ok") {
       appendMessage("assistant", data.html, true);
@@ -302,7 +301,7 @@ function appendMessage(role, content, isHtml = false) {
   const bubble = document.createElement("div");
   bubble.className = "msg-bubble";
   if (isHtml) {
-    bubble.innerHTML = sanitizeHTML(content);
+    bubble.innerHTML = content;
   } else {
     bubble.textContent = content;
   }
@@ -360,7 +359,7 @@ async function generateMealPlan() {
   showLoading(`Generating ${days}-day meal plan…`);
   try {
     const res  = await postJSON("/api/meal-plan", { days: parseInt(days) });
-    const data = await readJSON(res);
+    const data = await res.json();
     hideLoading();
     if (data.status === "ok") {
       showResult("mealPlanResult", data.html);
@@ -397,7 +396,7 @@ async function getSwaps() {
       foods: foods.split(",").map(f => f.trim()).filter(Boolean),
       reason
     });
-    const data = await readJSON(res);
+    const data = await res.json();
     hideLoading();
     if (data.status === "ok") showResult("swapResult", data.html);
     else showToast(data.message || "Error getting swaps", "error");
@@ -423,7 +422,7 @@ async function doExplain(food) {
   showLoading(`Analysing "${food}"…`);
   try {
     const res  = await postJSON("/api/explain", { food });
-    const data = await readJSON(res);
+    const data = await res.json();
     hideLoading();
     if (data.status === "ok") showResult("explainResult", data.html);
     else showToast(data.message || "Error", "error");
@@ -447,26 +446,9 @@ function handleDrop(event) {
 }
 
 function loadImageFile(file) {
-  const allowedTypes = ["image/png", "image/jpeg", "image/webp", "image/gif"];
-  const maxBytes = 10 * 1024 * 1024;
-  if (!allowedTypes.includes(file.type)) {
-    showToast("Choose a PNG, JPG, WebP or GIF image.", "error");
-    clearImage();
-    return;
-  }
-  if (file.size > maxBytes) {
-    showToast("Image must be 10 MB or smaller.", "error");
-    clearImage();
-    return;
-  }
-
+  selectedImageFile = file;
   const reader = new FileReader();
-  reader.onerror = () => {
-    showToast("Could not read this image. Please try another file.", "error");
-    clearImage();
-  };
   reader.onload = (e) => {
-    selectedImageFile = file;
     document.getElementById("imagePreview").src = e.target.result;
     document.getElementById("imagePreviewWrapper").classList.remove("hidden");
     document.getElementById("uploadZone").classList.add("hidden");
@@ -493,7 +475,7 @@ async function analyseImage() {
 
   try {
     const res  = await fetch("/api/analyse-image", { method: "POST", body: formData });
-    const data = await readJSON(res);
+    const data = await res.json();
     hideLoading();
     if (data.status === "ok") showResult("imageResult", data.html);
     else showToast(data.message || "Analysis failed", "error");
@@ -513,19 +495,13 @@ function searchFoodsLive() {
   _lookupTimer = setTimeout(async () => {
     try {
       const res  = await fetch(`/api/food-lookup?q=${encodeURIComponent(q)}`);
-      const data = await readJSON(res);
-      const container = document.getElementById("lookupSuggestions");
-      container.replaceChildren();
-      (data.suggestions || []).forEach((item) => {
-        const name = String(item.name || "").trim();
-        if (!name) return;
-        const button = document.createElement("button");
-        button.type = "button";
-        button.className = "sug-tag";
-        button.textContent = capitalize(name);
-        button.addEventListener("click", () => quickLookup(name));
-        container.appendChild(button);
-      });
+      const data = await res.json();
+      if (data.suggestions && data.suggestions.length) {
+        const container = document.getElementById("lookupSuggestions");
+        container.innerHTML = data.suggestions
+          .map(f => `<span class="sug-tag" onclick="quickLookup('${f.name}')">${capitalize(f.name)}</span>`)
+          .join("");
+      }
     } catch {}
   }, 280);
 }
@@ -541,7 +517,7 @@ async function quickLookup(food) {
   showLoading("Looking up nutrition data…");
   try {
     const res  = await fetch(`/api/food-lookup?q=${encodeURIComponent(food)}`);
-    const data = await readJSON(res);
+    const data = await res.json();
     hideLoading();
     if (data.food && !data.food.error) {
       const f = data.food;
@@ -571,7 +547,7 @@ async function getSuggestions() {
   showLoading("Generating personalised suggestions…");
   try {
     const res  = await fetch("/api/suggestions");
-    const data = await readJSON(res);
+    const data = await res.json();
     hideLoading();
     if (data.status === "ok") showResult("suggestionsResult", data.html);
     else showToast("Error getting suggestions", "error");
@@ -594,7 +570,7 @@ async function submitFeedback() {
       rating: fbRating,
       note:   getVal("fbNote"),
     });
-    const data = await readJSON(res);
+    const data = await res.json();
     if (data.status === "ok") {
       showToast("Feedback submitted! ✓", "success");
       setVal("fbItem", "");
@@ -612,31 +588,22 @@ async function submitFeedback() {
 function buildStars(containerId, initialRating, onChange) {
   const container = document.getElementById(containerId);
   if (!container) return;
-  container.replaceChildren();
+  container.innerHTML = "";
   let current = initialRating;
-  container.setAttribute("role", "group");
-  container.setAttribute("aria-label", "Rate from 1 to 5 stars");
 
   for (let i = 1; i <= 5; i++) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "star" + (i <= current ? " on" : "");
-    button.textContent = "★";
-    button.setAttribute("aria-label", `${i} out of 5 stars`);
-    button.setAttribute("aria-pressed", String(i === current));
-    button.addEventListener("focus", () => highlightStars(container, i));
-    button.addEventListener("blur", () => highlightStars(container, current));
-    button.addEventListener("mouseover", () => highlightStars(container, i));
-    button.addEventListener("mouseout", () => highlightStars(container, current));
-    button.addEventListener("click", () => {
+    const span = document.createElement("span");
+    span.className = "star" + (i <= current ? " on" : "");
+    span.textContent = "★";
+    span.dataset.val = i;
+    span.addEventListener("mouseover", () => highlightStars(container, i));
+    span.addEventListener("mouseout",  () => highlightStars(container, current));
+    span.addEventListener("click",     () => {
       current = i;
       highlightStars(container, current);
-      container.querySelectorAll(".star").forEach((star, index) =>
-        star.setAttribute("aria-pressed", String(index + 1 === current))
-      );
       if (onChange) onChange(current);
     });
-    container.appendChild(button);
+    container.appendChild(span);
   }
 }
 
@@ -644,72 +611,6 @@ function highlightStars(container, count) {
   container.querySelectorAll(".star").forEach((s, idx) => {
     s.classList.toggle("on", idx < count);
   });
-}
-
-
-/**
- * Render model/API HTML through a strict allowlist. Unknown elements are unwrapped
- * (or discarded for active-content elements); all event/style attributes are removed.
- */
-function sanitizeHTML(untrustedHTML) {
-  const allowedTags = new Set([
-    "P", "BR", "HR", "H1", "H2", "H3", "H4", "STRONG", "B", "EM", "I",
-    "UL", "OL", "LI", "BLOCKQUOTE", "PRE", "CODE", "TABLE", "THEAD",
-    "TBODY", "TR", "TH", "TD", "A"
-  ]);
-  const blockedTags = new Set(["SCRIPT", "STYLE", "IFRAME", "OBJECT", "EMBED", "SVG", "MATH"]);
-  const parser = new DOMParser();
-  const parsed = parser.parseFromString(String(untrustedHTML ?? ""), "text/html");
-
-  function clean(node) {
-    [...node.childNodes].forEach((child) => {
-      if (child.nodeType === Node.COMMENT_NODE) {
-        child.remove();
-        return;
-      }
-      if (child.nodeType !== Node.ELEMENT_NODE) return;
-      if (blockedTags.has(child.tagName)) {
-        child.remove();
-        return;
-      }
-      clean(child);
-      if (!allowedTags.has(child.tagName)) {
-        child.replaceWith(...child.childNodes);
-        return;
-      }
-      [...child.attributes].forEach((attr) => {
-        const name = attr.name.toLowerCase();
-        if (child.tagName === "A" && name === "href") {
-          const value = attr.value.trim();
-          if (/^(https?:|mailto:)/i.test(value)) {
-            child.setAttribute("href", value);
-            child.setAttribute("rel", "noopener noreferrer");
-            child.setAttribute("target", "_blank");
-            continue;
-          }
-        }
-        if (child.tagName === "TH" && ["colspan", "rowspan", "scope"].includes(name)) continue;
-        if (child.tagName === "TD" && ["colspan", "rowspan"].includes(name)) continue;
-        child.removeAttribute(attr.name);
-      });
-    });
-  }
-
-  clean(parsed.body);
-  return parsed.body.innerHTML;
-}
-
-async function readJSON(response) {
-  let data;
-  try {
-    data = await response.json();
-  } catch {
-    throw new Error("The server returned an unreadable response.");
-  }
-  if (!response.ok) {
-    throw new Error(data?.message || `Request failed (${response.status}). Please try again.`);
-  }
-  return data;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -721,7 +622,7 @@ function capitalize(s)   { return s ? s.charAt(0).toUpperCase() + s.slice(1) : s
 function showResult(id, html) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.innerHTML = sanitizeHTML(html);
+  el.innerHTML = html;
   el.classList.remove("hidden");
   setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "nearest" }), 50);
 }
