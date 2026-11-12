@@ -685,10 +685,11 @@ function sanitizeHTML(untrustedHTML) {
             child.setAttribute("href", value);
             child.setAttribute("rel", "noopener noreferrer");
             child.setAttribute("target", "_blank");
+            continue;
           }
         }
-        if (child.tagName === "TH" && ["colspan", "rowspan", "scope"].includes(name)) return;
-        if (child.tagName === "TD" && ["colspan", "rowspan"].includes(name)) return;
+        if (child.tagName === "TH" && ["colspan", "rowspan", "scope"].includes(name)) continue;
+        if (child.tagName === "TD" && ["colspan", "rowspan"].includes(name)) continue;
         child.removeAttribute(attr.name);
       });
     });
